@@ -11,7 +11,7 @@
         echo "Database connection refused: " . mysqli_connect_error();
     }
 
-    $query = "INSERT INTO `user` (`name`, `email`, `password`, `address`, `contactNumber`, `imagebase64`) VALUES ('$name', '$email', '$password', '$address', '$contactNumber', '$imagebase64')";
+    $query = "INSERT INTO `user` (`name`, `email`, `password`, `address`, `contactNumber`, `image`) VALUES ('$name', '$email', '$password', '$address', '$contactNumber', '$imagebase64')";
     if($result = mysqli_query($sql_connection, $query)){
         echo "User created!";
         mysqli_close($sql_connection);

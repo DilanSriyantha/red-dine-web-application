@@ -11,7 +11,10 @@
         die();
     }
 
-    $query = "SELECT * FROM `product` INNER JOIN `category` ON product.categoryId=category.id";
+    $categoryId = $_GET["categoryId"];
+    $categoryName = $_GET["categoryName"];
+
+    $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId='$categoryId') AS Prods INNER JOIN `category` ON Prods.categoryId = category.categoryId;";
 ?>
 
 <!DOCTYPE html>
@@ -81,9 +84,10 @@
                             if($result = mysqli_query($sql_connection, $query)){
                                 if($result->num_rows > 0){
                                     while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-                                        $imageUrl = $row["imagebase64"];
-                                        $name = $row["name"];
+                                        $imageUrl = $row["productImage"];
+                                        $name = $row["productName"];
                                         $price = $row["price"];
+                                        $category = $row["categoryName"];
                                         echo "
                                         <a class='col col-lg product-item-container' href='../pages/item-details.php?item_id=5115315395' id='5115315395'>
                                             <div class='product-item'>
@@ -92,12 +96,11 @@
                                                 </div>
                                                 <div class='product-item-details-container'>
                                                     <h4 class='p-0 m-0'>$name</h4>
-                                                    <small>$name</small>
+                                                    <small>$category</small>
                                                     <h2>$ $price</h2>
                                                 </div>
                                             </div>
-                                            <a class='col col-lg product-item-container' href='../pages/item-details.php'>
-                                            </a>
+
                                         </a>";
                                     }
                                 }else{
@@ -123,7 +126,7 @@
     </div>
     <div class="backdrop" id="backdrop"></div>
     <div class="popup-container-add-popular popup-container" id="add-product-popup">
-        <form class="add-popular-form form" id="login-form" action="addProductHandler.php" method="post">
+        <form class="add-popular-form form" id="login-form" action=<?php echo "addProductHandler.php?categoryId=$categoryId&categoryName=$categoryName" ?> method="post">
             <div class="form-header">
                 Add Product
                 <div class="close-btn-container">

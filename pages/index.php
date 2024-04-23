@@ -1,5 +1,24 @@
+<?php
+session_start();
+$user = null;
+if (isset($_SESSION["user"])) {
+    $user = $_SESSION["user"];
+}
+
+$sql_connection = mysqli_connect("localhost", "root", "", "red-dine", 3306);
+if (mysqli_connect_errno()) {
+    echo "Database connection refused!";
+    die();
+}
+
+$query_category = "SELECT * FROM `category`";
+$query_popular = "SELECT * FROM `product` WHERE `popular`='1'";
+$query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,14 +28,8 @@
     <link rel="stylesheet" href="../styles/carousel.css" type="text/css">
     <link rel="stylesheet" href="../styles/about-us.css" type="text/css">
 </head>
+
 <body>
-    <?php
-        session_start();
-        $user = null;
-        if(isset($_SESSION["user"])){
-            $user = $_SESSION["user"];
-        }
-    ?>
     <div class="w-100 h-100 background">
         <div class="w-100 h-100">
             <div class="w-100 h-100 display-flex flex-d-column page-wrapper">
@@ -56,21 +69,20 @@
                                     </div>
                                 </div> -->
                                 <div class="options-container">
-                                    <a class="option" href=
-                                    <?php 
-                                        if($user){
-                                            echo "../pages/user.php";
-                                        }else{
-                                            echo "../pages/login.php";
-                                        }
-                                    ?>>
+                                    <a class="option" href=<?php
+                                                            if ($user) {
+                                                                echo "../pages/user.php";
+                                                            } else {
+                                                                echo "../pages/login.php";
+                                                            }
+                                                            ?>>
                                         <img src=<?php
-                                            if($user){
-                                                echo $user["imagebase64"];
-                                            }else{
-                                                echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg";
-                                            }
-                                        ?>>
+                                                    if ($user) {
+                                                        echo $user["image"];
+                                                    } else {
+                                                        echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg";
+                                                    }
+                                                    ?>>
                                     </a>
                                     <a class="floating-option" href="../pages/cart.php">
                                         <img src="../images/shopping-cart.svg">
@@ -144,7 +156,7 @@
                                     <h1><span>Unleash</span> <br>Your Palate's Potential <br>with Our Unforgettable <br>Culinary Journey!</h1>
                                 </div>
                             </div>
-    
+
                             <a class="prev" onclick="plusSlide(-1)">❮</a>
                             <a class="next" onclick="plusSlide(1)">❯</a>
                         </div>
@@ -162,104 +174,31 @@
                     </div>
                     <div class="categories-wrapper">
                         <div class="categories-overlay"></div>
-                        <div class="container scroll-hide w-100"  id="categories-list">
+                        <div class="container scroll-hide w-100" id="categories-list">
                             <div class="categories-container">
-                                <a class="category-item-container" href="../pages/products.php?category=bites">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/Z6PMVhS/Bites.png">
-                                    </div>
-                                    <span>Bites</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=beverages">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/DGfbJdF/Beverages.png" alt="Beverages">
-                                    </div>
-                                    <span>Beverages</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=appetizers">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/PhYnhFw/Appetizers.png">
-                                    </div>
-                                    <span>Appetizers</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=stew">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/9srbT7C/Stew.png">
-                                    </div>
-                                    <span>Stew</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=rice">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/mcNwRMv/Rice-Dishes.png">
-                                    </div>
-                                    <span>Rice</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=noodles">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/wLVXg1S/Spaghetti.png">
-                                    </div>
-                                    <span>Noodles</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=soup">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/C8s57mB/Soup.png">
-                                    </div>
-                                    <span>Soup</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=salads">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/tchjD82/Salads.png">
-                                    </div>
-                                    <span>Salads</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=pizza">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                    </div>
-                                    <span>Pizza</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=pasta">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/P682V9Y/Pasta.png">
-                                    </div>
-                                    <span>Pasta</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=kottu">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/3yBpCYP/Kottu-Rush.png">
-                                    </div>
-                                    <span>Kottu Rotti</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=hotbeverages">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/ZVWWdTR/Hot-Beverages.png">
-                                    </div>
-                                    <span>Hot Beverages</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=ffjuice">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/r2WB83T/Fresh-Fruit-Juice.png">
-                                    </div>
-                                    <span>Fresh Fruit Juice</span>
-                                </a>
-                                <a class="category-item-container">
-                                    <div class="category-item" href="../pages/products.php?category=milkshakes">
-                                        <img loading="lazy" src="https://i.ibb.co/6Rzk7p8/Milkshakes.png">
-                                    </div>
-                                    <span>Milkshakes</span>
-                                </a>
-                                <a class="category-item-container">
-                                    <div class="category-item" href="../pages/products.php?category=chopsuey">
-                                        <img loading="lazy" src="https://i.ibb.co/6tQr3vM/Chopsuey.png">
-                                    </div>
-                                    <span>Chopsuey</span>
-                                </a>
-                                <a class="category-item-container" href="../pages/products.php?category=pasta">
-                                    <div class="category-item">
-                                        <img loading="lazy" src="https://i.ibb.co/P682V9Y/Pasta.png">
-                                    </div>
-                                    <span>Pasta</span>
-                                </a>
+                                <?php
+                                if ($result = mysqli_query($sql_connection, $query_category)) {
+                                    if ($result->num_rows > 0) {
+                                        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                            $imageUrl = $row["categoryImage"];
+                                            $id = $row["categoryId"];
+                                            $name = $row["categoryName"];
+
+                                            echo "
+                                                <a class='category-item-container' href='../pages/products.php?categoryId=$id&categoryName=$name'>
+                                                    <div class='category-item'>
+                                                        <img loading='lazy' src='$imageUrl'>
+                                                    </div>
+                                                    <span>$name</span>
+                                                </a>
+                                                ";
+                                        }
+                                        mysqli_free_result($result);
+                                    } else {
+                                        echo "<img src='../images/empty.png'>";
+                                    }
+                                }
+                                ?>
                                 <div class="category-item-container">
                                     <div class="padded-category-item"></div>
                                 </div>
@@ -274,310 +213,38 @@
                         <div class="popular-overlay"></div>
                         <div class="container scroll-hide w-100">
                             <div class="popular-container">
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="popular-item-container" href="item-details.php">
-                                    <div class="popular-item">
-                                        <div class="popular-item-content">
-                                            <div class="popular-item-thumbnail">
-                                                <img loading="lazy" src="https://i.ibb.co/p1k19jZ/Pizza.png">
-                                            </div>
-                                            <div class="details-container">
-                                                <div class="details-content">
-                                                    <h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                    <small>Pizza</small>
-                                                    <h4>$ 10.00</h4>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
+                                <?php
+                                if ($result = mysqli_query($sql_connection, $query_popular)) {
+                                    if ($result->num_rows > 0) {
+                                        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                            $imageUrl = $row["productImage"];
+                                            $name = $row["productName"];
+                                            $price = $row["price"];
+
+                                            echo "
+                                                    <a class='popular-item-container' href='item-details.php'>
+                                                        <div class='popular-item'>
+                                                            <div class='popular-item-content'>
+                                                                <div class='popular-item-thumbnail'>
+                                                                    <img loading='lazy' src='$imageUrl'>
+                                                                </div>
+                                                                <div class='details-container'>
+                                                                    <div class='details-content'>
+                                                                        <h4 class='p-0 m-0'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
+                                                                        <small>$name</small>
+                                                                        <h4>$ $price</h4>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                ";
+                                        }
+                                    } else {
+                                        echo "<img src='../images/empty.png'>";
+                                    }
+                                }
+                                ?>
                                 <div class="popular-item-container">
                                     <div class="padded-popular-item"></div>
                                 </div>
@@ -621,126 +288,37 @@
                         </div> -->
 
                         <div class="row">
-                            <div class="col col-lg featured-item-container">
-                                <div class="featured-item">
-                                    <div class="featured-item-thumbnail">
-                                        <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                    </div>
-                                    <div class="featured-item-details-container">
-                                        <h4 class="p-0 m-0">Kottu Rotti</h4>
-                                        <small>KOTTU ROTI</small>
-                                        <h4>$9.99</h4>
-                                    </div>
-                                    <div class="featured-label">
-                                        <small>FEATURED</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col col-lg featured-item-container">
-                                <div class="featured-item">
-                                    <div class="featured-item-thumbnail">
-                                        <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                    </div>
-                                    <div class="featured-item-details-container">
-                                        <h4 class="p-0 m-0">Kottu Rotti</h4>
-                                        <small>KOTTU ROTI</small>
-                                        <h4>$9.99</h4>
-                                    </div>
-                                    <div class="featured-label">
-                                        <small>FEATURED</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col col-lg featured-item-container">
-                                <div class="featured-item">
-                                    <div class="featured-item-thumbnail">
-                                        <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                    </div>
-                                    <div class="featured-item-details-container">
-                                        <h4 class="p-0 m-0">Kottu Rotti</h4>
-                                        <small>KOTTU ROTI</small>
-                                        <h4>$9.99</h4>
-                                    </div>
-                                    <div class="featured-label">
-                                        <small>FEATURED</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col col-lg featured-item-container">
-                                <div class="featured-item">
-                                    <div class="featured-item-thumbnail">
-                                        <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                    </div>
-                                    <div class="featured-item-details-container">
-                                        <h4 class="p-0 m-0">Kottu Rotti</h4>
-                                        <small>KOTTU ROTI</small>
-                                        <h4>$9.99</h4>
-                                    </div>
-                                    <div class="featured-label">
-                                        <small>FEATURED</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col col-lg featured-item-container">
-                                <div class="featured-item">
-                                    <div class="featured-item-thumbnail">
-                                        <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                    </div>
-                                    <div class="featured-item-details-container">
-                                        <h4 class="p-0 m-0">Kottu Rotti</h4>
-                                        <small>KOTTU ROTI</small>
-                                        <h4>$9.99</h4>
-                                    </div>
-                                    <div class="featured-label">
-                                        <small>FEATURED</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col col-lg featured-item-container">
-                                <div class="featured-item">
-                                    <div class="featured-item-thumbnail">
-                                        <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                    </div>
-                                    <div class="featured-item-details-container">
-                                        <h4 class="p-0 m-0">Kottu Rotti</h4>
-                                        <small>KOTTU ROTI</small>
-                                        <h4>$9.99</h4>
-                                    </div>
-                                    <div class="featured-label">
-                                        <small>FEATURED</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col col-lg featured-item-container">
-                                <div class="featured-item">
-                                    <div class="featured-item-thumbnail">
-                                        <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                    </div>
-                                    <div class="featured-item-details-container">
-                                        <h4 class="p-0 m-0">Kottu Rotti</h4>
-                                        <small>KOTTU ROTI</small>
-                                        <h4>$9.99</h4>
-                                    </div>
-                                    <div class="featured-label">
-                                        <small>FEATURED</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col col-lg featured-item-container">
-                                <div class="featured-item">
-                                    <div class="featured-item-thumbnail">
-                                        <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                    </div>
-                                    <div class="featured-item-details-container">
-                                        <h4 class="p-0 m-0">Kottu Rotti</h4>
-                                        <small>KOTTU ROTI</small>
-                                        <h4>$9.99</h4>
-                                    </div>
-                                    <div class="featured-label">
-                                        <small>FEATURED</small>
-                                    </div>
-                                </div>
-                            </div>
+                            <?php
+                            if ($result = mysqli_query($sql_connection, $query_popular)) {
+                                if ($result->num_rows > 0) {
+                                    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                        $imageUrl = $row["imagebase64"];
+                                        $name = $row["name"];
+                                        $price = $row["price"];
+
+                                        echo "
+                                            <div class='col col-lg featured-item-container'>
+                                                <div class='featured-item'>
+                                                    <div class='featured-item-thumbnail'>
+                                                        <img loading='lazy' src='$imageUrl'>
+                                                    </div>
+                                                    <div class='featured-item-details-container'>
+                                                        <h4 class='p-0 m-0'>$name</h4>
+                                                        <small>$name</small>
+                                                        <h4>$ $price</h4>
+                                                    </div>
+                                                    <div class='featured-label'>
+                                                        <small>FEATURED</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                                ";
+                                    }
+                                } else {
+                                    echo "<img src='../images/empty.png'>";
+                                }
+                            }
+                            ?>
                         </div>
                     </div>
                     <div class="page-footer">
@@ -755,7 +333,7 @@
                         </div>
                     </div>
                 </div>
-                
+
 
                 <!-- Orders -->
                 <div class="tab-content flex-d-column container" id="tab-orders">
@@ -766,7 +344,7 @@
                             <span><span class="color-red">Feed</span> your cravings!<br>Place your order now.</span>
                         </div>
                     </div>
-                    
+
                     <div class="orders-list-wrapper">
                         <div class="order-container">
                             <div class="order">
@@ -968,8 +546,8 @@
                                         <div class="content">
                                             <h1>Our Mission</h1>
                                             <p>At Red Dine, our mission is simple: to make dining enjoyable, convenient, and healthy for everyone.
-                                            We strive to exceed our customers' expectations by providing exceptional service, delicious food, and a welcoming atmosphere.
-                                            Whether you're dining in our restaurant, ordering takeout, or catering an event, we want your experience with Red Dine to be memorable and satisfying.</p>
+                                                We strive to exceed our customers' expectations by providing exceptional service, delicious food, and a welcoming atmosphere.
+                                                Whether you're dining in our restaurant, ordering takeout, or catering an event, we want your experience with Red Dine to be memorable and satisfying.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -982,7 +560,7 @@
                                         <div class="content">
                                             <h1>Our Team</h1>
                                             <p>Meet the faces behind Red Dine! Our team is composed of talented chefs, friendly servers, and dedicated staff who are committed to delivering excellence every day.
-                                            We value teamwork, creativity, and customer satisfaction, and we're always looking for new ways to improve and innovate.</p>
+                                                We value teamwork, creativity, and customer satisfaction, and we're always looking for new ways to improve and innovate.</p>
                                         </div>
                                     </div>
                                     <div class="image-container">
@@ -1001,11 +579,11 @@
                                         <div class="content">
                                             <h1>Contact us</h1>
                                             <p>
-                                                <h4 class="p-0 m-0">Email</h4>
-                                                <span>info.reddine@gmail.com</span>
-                                                <br><br>
-                                                <h4 class="p-0 m-0">Telephone</h4>
-                                                <span>+94 76 4 886 903</span>
+                                            <h4 class="p-0 m-0">Email</h4>
+                                            <span>info.reddine@gmail.com</span>
+                                            <br><br>
+                                            <h4 class="p-0 m-0">Telephone</h4>
+                                            <span>+94 76 4 886 903</span>
                                             </p>
                                         </div>
                                     </div>
@@ -1048,4 +626,5 @@
 <script src="../scripts/homeFunctions/Menu.js"></script>
 <script src="../scripts/homeFunctions/home-functions.js"></script>
 <script src="../scripts/homeFunctions/PopularItem.js"></script>
+
 </html>

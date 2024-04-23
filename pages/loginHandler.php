@@ -24,7 +24,7 @@
                     "password" => $row[3],
                     "address" => $row[4],
                     "contactNumber" => $row[5],
-                    "imagebase64" => $row[6]
+                    "image" => $row[6]
                 );
                 $user_exists = true;
                 echo "Login successfull";

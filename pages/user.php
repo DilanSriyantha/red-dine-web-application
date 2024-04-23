@@ -42,7 +42,7 @@
                                 <img src=
                                 <?php 
                                     if(isset($user)){
-                                        echo getUserAttr("imagebase64");
+                                        echo $user["image"];
                                     }else{
                                         echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg";
                                     }

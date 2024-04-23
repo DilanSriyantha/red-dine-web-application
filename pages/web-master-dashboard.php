@@ -176,9 +176,9 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                     if($result = mysqli_query($sql_connection, $query_category)){
                                         if($result->num_rows > 0){
                                             while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-                                                $imageUrl = $row["imagebase64"];
-                                                $id = $row["id"];
-                                                $name = $row["name"];
+                                                $imageUrl = $row["categoryImage"];
+                                                $id = $row["categoryId"];
+                                                $name = $row["categoryName"];
                                                 echo "
                                                 <a class='category-item-container'
                                                     href='../pages/web-master-products.php?categoryId=$id&categoryName=$name'>
@@ -220,8 +220,8 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                     if($result = mysqli_query($sql_connection, $query_popular)){
                                         if($result->num_rows > 0){
                                             while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-                                                $imageUrl = $row["imagebase64"];
-                                                $name = $row["name"];
+                                                $imageUrl = $row["productImage"];
+                                                $name = $row["productName"];
                                                 $price = $row["price"];
                                                 echo "
                                                     <a class='popular-item-container' href='item-details.html'>
@@ -302,8 +302,8 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                 if($result = mysqli_query($sql_connection, $query_featured)){
                                     if($result->num_rows > 0){
                                         while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-                                            $imageUrl = $row["imagebase64"];
-                                            $name = $row["name"];
+                                            $imageUrl = $row["productImage"];
+                                            $name = $row["productName"];
                                             $price = $row["price"];
 
                                             echo "

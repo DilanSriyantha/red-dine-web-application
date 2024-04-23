@@ -14,7 +14,7 @@
         die();
     }
 
-    $query = "INSERT INTO category (`name`, `imagebase64`) VALUES ('$name', '$imageURL')";
+    $query = "INSERT INTO category (`categoryName`, `categoryImage`) VALUES ('$name', '$imageURL')";
 
     if($result = mysqli_query($sql_connection, $query)){
         echo "Category created.";

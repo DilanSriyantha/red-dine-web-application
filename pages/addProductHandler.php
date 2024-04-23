@@ -3,6 +3,8 @@
     $name = $_POST["item-name"];
     $price = $_POST["price"];
     $imageUrl = $_POST["item-image-url"];
+    $categoryId = $_GET["categoryId"];
+    $categoryName = $_GET["categoryName"];
 
     foreach($_POST as $key => $value){
         echo "$key: $value<br>";
@@ -15,12 +17,12 @@
         die();
     }
 
-    $query = "INSERT INTO `product` (`categoryId`, `name`, `price`, `imagebase64`) VALUE ('$categoryId', '$name', '$price', '$imageUrl')";
+    $query = "INSERT INTO `product` (`categoryId`, `productName`, `price`, `productImage`) VALUE ('$categoryId', '$name', '$price', '$imageUrl')";
 
     if($result = mysqli_query($sql_connection, $query)){
         echo "Product created!";
         mysqli_close($sql_connection);
-        header("Location: web-master-products.php?categoryId=$categoryId&categoryName=$name", true);
+        header("Location: web-master-products.php?categoryId=$categoryId&categoryName=$categoryName", true);
         die();
     }
     echo "Error occurred!";
