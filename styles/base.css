@@ -1,0 +1,286 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
+}
+
+::-webkit-scrollbar-track {
+    background: #303030;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #545454;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #303030;
+}
+
+html, 
+body {
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+    font-family: "Roboto", sans-serif;
+    overflow: hidden;
+}
+
+/* .container {
+    background-color: red;
+    display: flexbox;
+    width: 100%;
+    height: 100%;
+} */
+
+.box {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    /* background-color: green; */
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(12, auto);
+    /* background-color: blue; */
+}
+
+.grid-item {
+    /* background-color: grey; */
+    /* padding: 20px; */
+    display: flex;
+    flex-direction: column;
+}
+
+[data-col-span="1"]{
+    grid-column-end: span 1;
+}
+
+[data-col-span="2"]{
+    grid-column-end: span 2;
+}
+
+[data-col-span="3"]{
+    grid-column-end: span 3;
+}
+
+[data-col-span="4"]{
+    grid-column-end: span 4;
+}
+
+[data-col-span="5"]{
+    grid-column-end: span 5;
+}
+
+[data-col-span="6"]{
+    grid-column-end: span 6;
+}
+
+[data-col-span="7"]{
+    grid-column-end: span 7;
+}
+
+[data-col-span="8"]{
+    grid-column-end: span 8;
+}
+
+[data-col-span="9"]{
+    grid-column-end: span 9;
+}
+
+[data-col-span="10"]{
+    grid-column-end: span 10;
+}
+
+[data-col-span="11"]{
+    grid-column-end: span 11;
+}
+
+[data-col-span="12"]{
+    grid-column-end: span 12;
+}
+
+.full-height{
+    height: 100%;
+}
+
+.bg-red{
+    background-color: red;
+}
+
+.bg-green {
+    background-color: green;
+}
+
+.bg-blue {
+    background-color: blue;
+}
+
+.bg-yellow {
+    background-color: yellow;
+}
+
+.bg-purple {
+    background-color: purple;
+}
+
+.display-flex {
+    display: flex !important;
+    /* height: auto !important; */
+}
+
+.flex-d-row {
+    flex-direction: row !important;
+}
+
+.flex-d-column {
+    flex-direction: column !important;
+}
+
+.p-5 {
+    padding: 5px;
+}
+
+.p-10 {
+    padding: 10px;
+}
+
+.px-5 {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.px-10 {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.py-5 {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.py-10 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.pt-5 {
+    padding-top: 5px;
+}
+
+.pt-10 {
+    padding-top: 10px;
+}
+
+.pb-5 {
+    padding-bottom: 5px;
+}
+
+.pb-10 {
+    padding-bottom: 10px;
+}
+
+.p-0 {
+    padding: 0px !important;
+}
+
+.m-0 {
+    margin: 0px !important;
+}
+
+.horizontal-scroll-view {
+    margin: 4px, 4px;
+    padding: 4px;
+    /* width: 300px; */
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    /* margin: 0 -15px; Adjust margin to compensate for column gaps */
+}
+
+.col {
+    flex: 0 0 100%; /* By default, columns occupy full width */
+    padding: 0 15px; /* Adjust padding for column gaps */
+}
+
+@media (min-width: 576px) {
+    .col-sm {
+        flex: 0 0 50%; /* 2 columns on small devices */
+    }
+}
+
+@media (min-width: 768px) {
+    .col-md {
+        flex: 0 0 33.3333%; /* 3 columns on medium devices */
+    }
+}
+
+@media (min-width: 992px) {
+    .col-lg {
+        flex: 0 0 25%; /* 4 columns on large devices */
+    }
+}
+
+@media (min-width: 1200px) {
+    .col-xl {
+        flex: 0 0 20%; /* 5 columns on extra large devices */
+    }
+}
+
+.container {
+    /* width: 100%; */
+    padding: 20px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: auto;
+    position: relative;
+}
+
+.scroll-hide {
+    scrollbar-width: none;
+}
+
+/* Example styling for demo purposes */
+.col {
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.h-100 {
+    height: 100% !important;
+}
+
+.w-100 {
+    width: 100% !important;
+}
+
+.w-75 {
+    width: 75% !important;
+}
+
+.w-50 {
+    width: 50% !important;
+}
+
+.w-25 {
+    width: 25% !important;
+}
+
+.scroll-x {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+}
+
+.gap-5 {
+    gap: 5;
+}

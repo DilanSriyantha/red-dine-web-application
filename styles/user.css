@@ -1,0 +1,76 @@
+.background {
+    background-color: #1d1d1d;
+    color: #ececec;
+    overflow: auto;
+}
+
+.content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color:blue; */
+}
+
+.acc-info-container {
+    /* background-color: red; */
+    width: 60%;
+    flex-direction: column;
+}
+
+@media (max-width: 1060px){
+    .acc-info-container {
+        width: 100%;
+    }
+}
+
+.acc-info-container .prof-pic-container {
+    position: relative;
+    width: max-content;
+}
+
+.acc-info-container .prof-pic-container img {
+    width: 120px;
+    width: 120px;
+    border-radius: 100px;
+    object-fit: cover;
+}
+
+.acc-info-container .prof-pic-container .edit-prof-pic {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #545454;
+    position: absolute;
+    padding: 10px;
+    border-radius: 100px;
+    bottom: 0;
+    right: 0;
+    cursor: pointer;
+    box-shadow: 5px 3px 8px #000;
+}
+
+.acc-info-container .prof-pic-container .edit-prof-pic img {
+    width: 20px;
+}
+
+.acc-info-container .basic-info-container {
+
+}
+
+.acc-info-container .basic-info-container .element {
+    display: flex;
+    flex-direction: column;
+    color: #d3d3d3;
+    cursor: pointer;
+}
+
+.acc-info-container .basic-info-container .element span {
+    font-weight: bold;
+    color: #ececec;
+}
+
+hr {
+    border-color: #545454;
+    margin-left: 10px;
+    margin-right: 10px;
+}
