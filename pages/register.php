@@ -20,7 +20,7 @@
                         <h3>Register</h3>
                     </div>
                     <!-- <hr> -->
-                    <form class="login-form" id="login-form" action="registerHandler.php" method="post">
+                    <form class="login-form" id="login-form" action="registerHandler.php" method="post" enctype="multipart/form-data">
                         <div class="prof-pic-container" style="display: flex; justify-content: center; align-items: center;">
                             <div style=" position: relative;">
                                 <img loading="lazy"id="prof-pic-preview" style="width: 8rem; height: 8rem; border-radius: 100px; object-fit: cover;" src="https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg">
@@ -37,6 +37,12 @@
                         <input type="email" id="user-email-input" placeholder="E-mail" name="email" required>
                         <input type="text" id="user-address-input" placeholder="Address" name="address" required>
                         <input type="tel" id="user-telephone-input" placeholder="Contact number" name="contactNumber" required>
+                        
+                        <div class="admin-checkbox-container">
+                            <label class="cus" for="user-role-admin" style="font-size: small">Administrator?</label>
+                            <input type="checkbox" id="user-role-admin" name="master">
+                        </div>
+
                         <!-- <div>
                             <hr>
                         </div> -->

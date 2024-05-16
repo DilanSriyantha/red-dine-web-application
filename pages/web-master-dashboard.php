@@ -7,9 +7,8 @@ if (isset($_SESSION["user"])) {
 
 $sql_connection = mysqli_connect("localhost", "root", "", "red-dine", 3306);
 if (mysqli_connect_errno()) {
-    echo "Database connection refused!";
     mysqli_close($sql_connection);
-    die();
+    die("Database connection refused!");
 }
 
 $query_category = "SELECT * FROM `category`";
@@ -37,9 +36,9 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
             <div class="w-100 h-100 display-flex flex-d-column page-wrapper">
                 <div class="menu">
                     <div class="menu-content-wrapper">
-                        <div class="logo-container">
+                        <a class="logo-container" href="#">
                             <img src="../images/red_logo.png">
-                        </div>
+                        </a>
                         <div class="menu-wrapper">
                             <div class="menu-container">
                                 <!-- <div class="menu-strip">
@@ -72,7 +71,7 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                 </div> -->
                                 <div class="options-container">
                                     <a class="option" href="../pages/user.php">
-                                        <img src="https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg">
+                                        <img src=<?php if($user) echo $user["image"]; else echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg"; ?>>
                                     </a>
                                     <!-- <a class="floating-option" href="../pages/cart.html">
                                         <img src="../images/shopping-cart.svg">
@@ -304,7 +303,7 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                         while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
                                             $imageUrl = $row["productImage"];
                                             $name = $row["productName"];
-                                            $price = $row["price"];
+                                            $price = $row["productPrice"];
 
                                             echo "
                                             <div class='col col-lg featured-item-container'>
@@ -644,7 +643,7 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
     </div>
     <div class="backdrop" id="backdrop"></div>
     <div class="popup-container-add-category popup-container" id="add-category-popup">
-        <form class="add-category-form form" id="login-form" action="addCategoryHandler" method="post">
+        <form class="add-category-form form" id="login-form" action="addCategoryHandler" method="post" enctype="multipart/form-data">
             <div class="form-header">
                 Add Category
                 <div class="close-btn-container">
@@ -658,7 +657,7 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
             <div style="display: flex; justify-content: center;">
                 <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; cursor: pointer;" id="category-image-preview">
             </div>
-            <input type="file" id="category-image-input" placeholder="Category Image" accept="image/*" style="display: none;">
+            <input type="file" id="category-image-input" placeholder="Category Image" accept="image/*" style="display: none;" name="imageFile">
             <input type="url" id="category-image-url" placeholder="URL" name="category-image-url" required hidden>
             <input type="text" name="category-name" id="cat-caption" placeholder="Category Caption" required>
             <!-- <div>

@@ -35,12 +35,15 @@
     height: 100%;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 .login-form-container {
     display: block;
     white-space: wrap;
     width: 20%;
+    max-height: 80%;
+    overflow: auto;
     /* background-color: #1d1d1d; */
     padding: 10px;
     border-radius: 10px;
@@ -71,12 +74,17 @@
     flex-direction: column;
 }
 
-input {
+input[type=text], 
+input[type=password], 
+input[type=email], 
+input[type=tel] {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     padding: 10px;
     margin: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     border-radius: 10px;
     border: 1px solid #545454;
     background: none;
@@ -85,7 +93,10 @@ input {
     transition: .2s;
 }
 
-input:focus {
+input[type=text]:focus, 
+input[type=password]:focus, 
+input[type=email]:focus, 
+input[type=tel]:focus {
     background: none;
     border: 1px solid #545454;
     box-shadow: 0 0 10px #ed5d55aa, 0 0 20px #ed5d55aa, 0 0 30px #ed5d55aa;
@@ -93,7 +104,10 @@ input:focus {
     transition: .2s;
 }
 
-input:active {
+input[type=text]:active, 
+input[type=password]:active, 
+input[type=email]:active, 
+input[type=tel]:active {
     background: none;
     outline: none;
 }
@@ -131,4 +145,11 @@ a {
     color: #fff;
     background-color: #ed5d55;
     transition: .2s;
+}
+
+.admin-checkbox-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 12px;
 }

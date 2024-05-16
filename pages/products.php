@@ -34,28 +34,28 @@ $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId=$
             <div class="w-100 h-100 display-flex flex-d-column page-wrapper">
                 <div class="menu">
                     <div class="menu-content-wrapper">
-                        <div class="logo-container">
+                        <a class="logo-container" href="../index.php">
                             <img src="../images/red_logo.png">
-                        </div>
+                        </a>
                         <div class="menu-wrapper">
                             <div class="menu-container">
                                 <div class="menu-strip">
-                                    <div class="search-container">
+                                    <form class="search-container">
                                         <input type="text" id="search-input">
                                         <button type="button" id="search-button">
                                             <img src="../images/search.svg">
                                         </button>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                         <div class="options-container">
                             <a class="option" href="../pages/user.php">
                                 <img src=<?php
-                                 if($user){
+                                if ($user) {
                                     echo $user["image"];
-                                }else{
-                                    echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg" ;
+                                } else {
+                                    echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg";
                                 } ?>>
                             </a>
                             <a class="floating-option" href="../pages/cart.html">
@@ -80,7 +80,7 @@ $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId=$
                                     $imageUrl = $row["productImage"];
                                     $name = $row["productName"];
                                     $category = $row["categoryName"];
-                                    $price = $row["price"];
+                                    $price = $row["productPrice"];
                                     echo "
                                         <a class='col col-lg product-item-container' href='../pages/item-details.php?item_id=5115315395' id='5115315395'>
                                             <div class='product-item'>

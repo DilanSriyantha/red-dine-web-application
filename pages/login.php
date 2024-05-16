@@ -52,6 +52,6 @@
     </div>
     </div>
 </body>
-<script src="../scripts/login-functions.js"></script>
+<!-- <script src="../scripts/homeFunctions/login-functions.js"></script> -->
 
 </html>

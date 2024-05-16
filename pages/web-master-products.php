@@ -1,24 +1,29 @@
 <?php
-    session_start();
-    $user = null;
-    if(isset($user)){
-        $user = $_SESSION["user"];
-    }
+session_start();
+$user = null;
+if (isset($_SESSION["user"])) {
+    $user = $_SESSION["user"];
+}
 
-    $sql_connection = mysqli_connect("localhost", "root", "", "red-dine", 3306);
-    if(mysqli_connect_errno()){
-        echo "Database connection refused";
-        die();
-    }
+$sql_connection = mysqli_connect("localhost", "root", "", "red-dine", 3306);
+if (mysqli_connect_errno()) {
+    echo "Database connection refused";
+    die();
+}
 
-    $categoryId = $_GET["categoryId"];
-    $categoryName = $_GET["categoryName"];
+$categoryId = $_GET["categoryId"];
+$categoryName = $_GET["categoryName"];
 
-    $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId='$categoryId') AS Prods INNER JOIN `category` ON Prods.categoryId = category.categoryId;";
+if($_SERVER["REQUEST_METHOD"] == "GET"){
+
+}
+
+$query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId='$categoryId') AS Prods INNER JOIN `category` ON Prods.categoryId = category.categoryId;";
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,37 +33,34 @@
     <link rel="stylesheet" href="../styles/home.css">
     <link rel="stylesheet" href="../styles/web-master-dashboard.css">
 </head>
+
 <body>
     <div class="w-100 h-100 background">
         <div class="w-100 h-100">
             <div class="w-100 h-100 display-flex flex-d-column page-wrapper">
                 <div class="menu">
                     <div class="menu-content-wrapper">
-                        <div class="logo-container">
+                        <a class="logo-container" href="./web-master-dashboard.php">
                             <img src="../images/red_logo.png">
-                        </div>
+                        </a>
                         <div class="menu-wrapper">
                             <div class="menu-container">
                                 <div class="menu-strip">
-                                    <div class="search-container">
-                                        <input type="text" id="search-input">
-                                        <button type="button" id="search-button">
+                                    <form class="search-container" id="search-form">
+                                        <input class="m-0" type="text" id="search-input">
+                                        <button type="submit" id="search-button">
                                             <img src="../images/search.svg">
                                         </button>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                         <div class="options-container">
                             <a class="option" href="../pages/user.php">
-                                <img src=
-                                <?php 
-                                    if($user){
-                                        echo $user["imagebase64"];
-                                    }else{
-                                        echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg";
-                                    }
-                                ?>>
+                                <img src=<?php if ($user)
+                                    echo $user["image"];
+                                else
+                                    echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg"; ?>>
                             </a>
                         </div>
                     </div>
@@ -67,47 +69,68 @@
                     <div style="display: flex; flex-direction: row; justify-content: space-between;">
                         <h1>
                             <?php
-                                $category = $_GET["categoryName"];
-                                $category[0] = strtoupper($category[0]);
-                                echo $category;
+                            $category = $_GET["categoryName"];
+                            $category[0] = strtoupper($category[0]);
+                            echo $category;
                             ?>
                         </h1>
-                        <div style="display: flex; justify-content: center; align-items: center;">
-                            <div class="add-button" style="padding: 10px;" id="add-category-popup-trigger" data-target-popup="add-category-popup">
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 10px;">
+                            <div class="add-button" style="padding: 10px;" id="add-category-popup-trigger"
+                                data-target-popup="add-category-popup">
                                 <img src="../images/plus.svg">
                                 Add
+                            </div>
+                            <div class="delete-button" style="padding: 10px;" id="delete-category-button">
+                                <img src="../images/trash.svg">
+                                Delete
                             </div>
                         </div>
                     </div>
                     <div class="row" id="products-list">
                         <?php
-                            if($result = mysqli_query($sql_connection, $query)){
-                                if($result->num_rows > 0){
-                                    while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-                                        $imageUrl = $row["productImage"];
-                                        $name = $row["productName"];
-                                        $price = $row["price"];
-                                        $category = $row["categoryName"];
-                                        echo "
-                                        <a class='col col-lg product-item-container' href='../pages/item-details.php?item_id=5115315395' id='5115315395'>
+                        if ($result = mysqli_query($sql_connection, $query)) {
+                            if ($result->num_rows > 0) {
+                                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                    $id = $row["productId"];
+                                    $imageUrl = $row["productImage"];
+                                    $name = $row["productName"];
+                                    $price = $row["productPrice"];
+                                    $category = $row["categoryName"];
+                                    echo "
+                                        <a class='col col-lg product-item-container' href='../pages/item-details.php?item_id=$id' id='$id'>
                                             <div class='product-item'>
                                                 <div class='product-item-thumbnail'>
                                                     <img loading='lazy' src='$imageUrl'>
                                                 </div>
+
                                                 <div class='product-item-details-container'>
                                                     <h4 class='p-0 m-0'>$name</h4>
                                                     <small>$category</small>
-                                                    <h2>$ $price</h2>
+                                                    <h2>LKR $price</h2>
                                                 </div>
-                                            </div>
 
+                                                <form action='productActionHandler.php?categoryId=$categoryId&categoryName=$categoryName&productId=$id' method='post' class='product-item-options-container'>
+                                                    <button type='submit' name='btnEdit' style='background-color: #4285f4; border-bottom-left-radius: 20px;'>
+                                                        <div>
+                                                            <img src='../images/edit-2.svg' style='width: 20px; height: 20px;'>
+                                                            Edit
+                                                        </div>
+                                                    </button>
+                                                    <button type='submit' name='btnDelete' style='background-color: #A84843; border-bottom-right-radius: 20px;'>
+                                                        <div>
+                                                            <img src='../images/trash.svg'>
+                                                            Delete
+                                                        </div>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </a>";
-                                    }
-                                }else{
-                                    echo "<img src='../images/empty.png'>";
                                 }
+                            } else {
+                                echo "<img src='../images/empty.png'>";
                             }
-                        ?>  
+                        }
+                        ?>
                     </div>
                     <div class="page-footer">
                         <div class="page-footer-content">
@@ -126,7 +149,7 @@
     </div>
     <div class="backdrop" id="backdrop"></div>
     <div class="popup-container-add-popular popup-container" id="add-product-popup">
-        <form class="add-popular-form form" id="login-form" action=<?php echo "addProductHandler.php?categoryId=$categoryId&categoryName=$categoryName" ?> method="post">
+        <form class="add-popular-form form" id="login-form" action=<?php echo "addProductHandler.php?categoryId=$categoryId&categoryName=$categoryName" ?> method="post" enctype="multipart/form-data">
             <div class="form-header">
                 Add Product
                 <div class="close-btn-container">
@@ -134,17 +157,25 @@
                 </div>
             </div>
             <div style="display: flex; margin: 10px;">
-                <button type="button" class="image-option-button image-option-button-selected" id="image-option-file" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">File</button>
-                <button type="button" class="image-option-button" id="image-option-url" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">URL</button>
+                <button type="button" class="image-option-button image-option-button-selected" id="image-option-file"
+                    style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">File</button>
+                <button type="button" class="image-option-button" id="image-option-url"
+                    style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">URL</button>
             </div>
             <div style="display: flex; justify-content: center;">
-                <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; cursor: pointer;" id="item-image-preview">
+                <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; cursor: pointer;"
+                    id="item-image-preview">
             </div>
-            <input type="file" id="item-image-input" placeholder="item Image" accept="image/*" style="display: none;">
+            <input type="file" id="item-image-input" placeholder="item Image" accept="image/*" style="display: none;" name="imageFile">
             <input type="url" id="item-image-url" placeholder="URL" name="item-image-url" required hidden>
             <input type="text" id="item-caption" placeholder="Item Caption" name="item-name" required>
-            <input type="text" id="item" placeholder="Item">
+            <input type="textarea" id="item-description" placeholder="Item Description" name="item-description">
             <input type="number" id="price-input" placeholder="Price" name="price" required>
+            <div style="color: #ececec; display: flex; flex-direction: row; gap: 10px; align-items: center; margin-left: 12px;">
+                <label for="veg">Veg?</label>
+                <input type="checkbox" id="veg" name="veg">
+            </div>
             <input type="text" value="<?php echo $_GET["categoryId"] ?>" name="categoryId" hidden>
             <!-- <div>
                 <hr>
@@ -168,6 +199,10 @@
         const itemImagePreview = document.getElementById("item-image-preview");
         const itemImageInput = document.getElementById("item-image-input");
         const itemImageUrl = document.getElementById("item-image-url");
+        const searchForm = document.getElementById("search-form");
+        const txtSearch = document.getElementById("search-input");
+        const btnSearch = document.getElementById("search-button");
+        const btnDeleteCategory = document.getElementById("delete-category-button");
 
         const popupIds = [
             "add-product-popup"
@@ -175,7 +210,7 @@
 
         const popups = [];
 
-        for(var i = 0; i < addBtns.length; i++){
+        for (var i = 0; i < addBtns.length; i++) {
             var popup = new Popup(addBtns.item(i), document.getElementById(popupIds[i]), backdrop);
             popups.push(popup);
         }
@@ -185,45 +220,78 @@
         });
 
         for (var i = 0; i < imageOptionButtons.length; i++) {
-        imageOptionButtons.item(i).addEventListener("click", (e) => {
-            const selectedImageOptions = document.getElementsByClassName("image-option-button-selected");
-            for (var i = 0; i < selectedImageOptions.length; i++) {
-                selectedImageOptions.item(i).classList.remove("image-option-button-selected");
-            }
-            e.target.classList.add("image-option-button-selected");
-            imageOption === 0 ? imageOption = 1 : imageOption = 0;
+            imageOptionButtons.item(i).addEventListener("click", (e) => {
+                const selectedImageOptions = document.getElementsByClassName("image-option-button-selected");
+                for (var i = 0; i < selectedImageOptions.length; i++) {
+                    selectedImageOptions.item(i).classList.remove("image-option-button-selected");
+                }
+                e.target.classList.add("image-option-button-selected");
+                imageOption === 0 ? imageOption = 1 : imageOption = 0;
 
-            updateItemPopup();
+                updateItemPopup();
+            });
+        }
+
+        const updateItemPopup = () => {
+            if (imageOption === 0) {
+                itemImageUrl.setAttribute("hidden", true);
+            } else {
+                itemImageUrl.removeAttribute("hidden");
+            }
+        };
+
+        itemImagePreview.addEventListener("click", (e) => {
+            itemImageInput.click();
         });
-    }
 
-    const updateItemPopup = () => {
-        if (imageOption === 0) {
-            itemImageUrl.setAttribute("hidden", true);
-        } else {
-            itemImageUrl.removeAttribute("hidden");
-        }
-    };
-
-    itemImagePreview.addEventListener("click", (e) => {
-        itemImageInput.click();
-    });
-
-    itemImageInput.addEventListener("input", async (e) => {
-        try {
-            const base64 = await Utils.compressImage(e.target.files[0]);
-            if (base64) {
-                itemImagePreview.src = base64;
-                itemImageUrl.value = base64;
+        itemImageInput.addEventListener("input", async (e) => {
+            try {
+                const base64 = await Utils.compressImage(e.target.files[0]);
+                if (base64) {
+                    itemImagePreview.src = base64;
+                    itemImageUrl.value = base64;
+                }
+            } catch (err) {
+                console.log(err);
             }
-        } catch (err) {
-            console.log(err);
-        }
-    });
+        });
 
-    itemImageUrl.addEventListener("input", (e) => {
-        itemImagePreview.src = e.target.value;
-    });
+        itemImageUrl.addEventListener("input", (e) => {
+            itemImagePreview.src = e.target.value;
+        });
+
+        searchForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            try{
+                const urlParams = new URLSearchParams(window.location.search);
+                const res = await fetch("./productsSearchHandler.php?categoryId=" + urlParams.get("categoryId") + "&searchQuery=" + txtSearch.value, {
+                    method: "GET"
+                });
+                if(res){
+                    const productsList = document.getElementById("products-list");
+                    productsList.innerHTML = await res.text();
+                }
+            }catch(err){
+                console.log(err);
+            }
+        }); 
+
+        btnDeleteCategory.addEventListener("click", async (e) => {
+            try{
+                const urlParams = new URLSearchParams(window.location.search);
+                const res = await fetch("./deleteCategoryHandler.php?categoryId=" + urlParams.get("categoryId"), {
+                    method: "GET"
+                });
+                if(res){
+                    console.log(await res.text());
+                    location.reload();
+                }
+            }catch(err){
+                console.log(err);
+            }
+        });
     </script>
 </body>
+
 </html>

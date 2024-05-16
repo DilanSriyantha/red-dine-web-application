@@ -1,10 +1,15 @@
 <?php
-    $name = $_POST["category-name"];
-    $imageURL = $_POST["category-image-url"];
+    include "../utils/image_uploader.php";
 
-    // foreach($_POST as $key => $value){
-    //     echo "$key: $value<br>";
-    // }
+    $name = $_POST["category-name"];
+
+    echo $_FILES["imageFile"]["size"] > 0 ? "true" : "false";
+
+    $imageUrl = $_POST["category-image-url"];
+    if($_FILES["imageFile"]["size"] > 0){
+        $imageUploader = new ImageUploader($_FILES["imageFile"]);
+        $imageUrl = $imageUploader->uploadToFirebaseStorage("cat_img_");
+    }
 
     $sql_connection = mysqli_connect("localhost", "root", "", "red-dine", 3306);
     if(mysqli_connect_errno()){
@@ -14,7 +19,7 @@
         die();
     }
 
-    $query = "INSERT INTO category (`categoryName`, `categoryImage`) VALUES ('$name', '$imageURL')";
+    $query = "INSERT INTO category (`categoryName`, `categoryImage`) VALUES ('$name', '$imageUrl')";
 
     if($result = mysqli_query($sql_connection, $query)){
         echo "Category created.";

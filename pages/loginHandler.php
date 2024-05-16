@@ -10,21 +10,22 @@
         die();
     }
 
-    $query = "SELECT * FROM `user` WHERE `email`='$email'";
+    $query = "SELECT * FROM `user` WHERE `userEmail`='$email'";
     $user_exists = false;
     $user = null;
     
     if($result = mysqli_query($sql_connection, $query)){
         while($row = mysqli_fetch_row($result)){
-            if($row[3] === $password){
+            if($row[4] === $password){
                 $user = array(
                     "id" => $row[0],
-                    "name" => $row[1],
-                    "email" => $row[2],
-                    "password" => $row[3],
-                    "address" => $row[4],
-                    "contactNumber" => $row[5],
-                    "image" => $row[6]
+                    "master" => $row[1],
+                    "name" => $row[2],
+                    "email" => $row[3],
+                    "password" => $row[4],
+                    "address" => $row[5],
+                    "contactNumber" => $row[6],
+                    "image" => $row[7]
                 );
                 $user_exists = true;
                 echo "Login successfull";
@@ -46,7 +47,11 @@
         session_start();
         $_SESSION["user"] = $user;
 
-        header("Location: index.php", true);
+        if($user["master"])
+            header("Location: ./web-master-dashboard.php", true);
+        else
+            header("Location: ../index.php", true);
+
         die();
     }else{
         header("Location: loginResult.php", true);
