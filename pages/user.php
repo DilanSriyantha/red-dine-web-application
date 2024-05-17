@@ -33,7 +33,7 @@ function getUserAttr($key)
             <div class="w-100 h-100 display-flex flex-d-column">
                 <div class="menu">
                     <div class="menu-content-wrapper">
-                        <a class="logo-container" href="<?php if(isset($user["master"])) echo "./web-master-dashboard.php"; else echo "../index.php" ?>">
+                        <a class="logo-container" href="<?php if($user["master"]) echo "./web-master-dashboard.php"; else echo "../index.php" ?>">
                             <img src="../images/red_logo.png">
                         </a>
                         <div class="menu-wrapper">
