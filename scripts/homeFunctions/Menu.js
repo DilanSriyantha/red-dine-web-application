@@ -22,7 +22,7 @@ class Menu {
         }
 
         // activate 1st tab by default
-        this.menu_options[0].setActive(true);
+        // this.menu_options[0].setActive(true);
     }
 
     init() {
@@ -78,8 +78,27 @@ class Menu {
                 this.menu_opened = false;
             }, 500);
         }
-
         // console.log("style.width = " + this.menu.style.width, "scrollWidth = " + this.menu.scrollWidth);
         // console.log("style.height = " + this.menu.style.height, "scrollHeight = " + this.menu.scrollHeight);
+    }
+    
+    selectMenuOption(index){
+        this.menu_options.forEach((_mo) => {
+            if(_mo.active){
+                _mo.setActive(false);
+            }
+        });
+
+        this.menu_options[index].setActive(true);
+    }
+
+    getActiveTab() {
+        const activeTab = this.tabs.find((tab) => {
+            return tab.active;
+        });
+
+        console.log(activeTab);
+
+        return activeTab;
     }
 }

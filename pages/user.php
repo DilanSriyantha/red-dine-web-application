@@ -33,7 +33,7 @@ function getUserAttr($key)
             <div class="w-100 h-100 display-flex flex-d-column">
                 <div class="menu">
                     <div class="menu-content-wrapper">
-                        <a class="logo-container" href="../index.php">
+                        <a class="logo-container" href="<?php if(isset($user["master"])) echo "./web-master-dashboard.php"; else echo "../index.php" ?>">
                             <img src="../images/red_logo.png">
                         </a>
                         <div class="menu-wrapper">
@@ -82,22 +82,22 @@ function getUserAttr($key)
                             <div class="basic-info-container">
                                 <div class="element">
                                     <span>Name</span>
-                                    <?php echo getUserAttr("name") ?>
+                                    <?php echo $user["name"] ?>
                                 </div>
                                 <hr>
                                 <div class="element">
                                     <span>Phone number</span>
-                                    <?php echo getUserAttr("contactNumber") ?>
+                                    <?php echo $user["contactNumber"] ?>
                                 </div>
                                 <hr>
                                 <div class="element">
                                     <span>Email</span>
-                                    <?php echo getUserAttr("email") ?>
+                                    <?php echo $user["email"] ?>
                                 </div>
                                 <hr>
                                 <div class="element">
                                     <span>Address</span>
-                                    <?php echo getUserAttr("address") ?>
+                                    <?php echo $user["address"] ?>
                                 </div>
                                 <hr>
                                 <div class="element">
@@ -105,7 +105,7 @@ function getUserAttr($key)
                                     ">Logout</a>
                                 </div>
                                 <div class="element pt-10">
-                                    <a href="../pages/privacy-policy.html">Privacy Policy</a>
+                                    <a href="../pages/privacy-policy.php">Privacy Policy</a>
                                 </div>
                             </div>
                         </div>
@@ -113,8 +113,7 @@ function getUserAttr($key)
                     <div class="page-footer">
                         <div class="page-footer-content">
                             <h3>Red Dine</h3>
-                            <span>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti porro molestiae nisi
-                                repudiandae quod rerum repellendus? A eligendi temporibus voluptatem.</span>
+                            <span>Copyright© 2023-2024 Red Dine Foodworks</span>
                             <div class="icons-container">
                                 <img src="../images/facebook.svg">
                                 <img src="../images/twitter.svg">

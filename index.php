@@ -14,6 +14,8 @@ if (mysqli_connect_errno()) {
 $query_category = "SELECT * FROM `category`";
 $query_popular = "SELECT * FROM (SELECT * FROM `product` WHERE `popular`='1') AS Prods INNER JOIN `category` ON category.categoryId = Prods.categoryId;";
 $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') AS Prods INNER JOIN `category` ON category.categoryId = Prods.categoryId;";
+$query_orders = $user ? "SELECT * FROM `orders` WHERE `userId`=" . $user['id'] . " ORDER BY `orderId` DESC;" : "";
+$query_orderitems = "SELECT Items.`orderId`, Items.`productId`, items.`productName`, `productImage`, `unitCost`, `qty`, `total` FROM (SELECT * FROM `orderitems`) AS Items INNER JOIN `orders` ON `orders`.orderid = Items.orderid INNER JOIN `product` ON `product`.`productId` = Items.productId";
 ?>
 
 <!DOCTYPE html>
@@ -27,6 +29,7 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
     <link rel="stylesheet" href="./styles/home.css" type="text/css">
     <link rel="stylesheet" href="./styles/carousel.css" type="text/css">
     <link rel="stylesheet" href="./styles/about-us.css" type="text/css">
+    <link rel="stylesheet" href="./styles/loading-spinner.css" type="text/css">
 </head>
 
 <body>
@@ -42,29 +45,33 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                             <div class="menu-container">
                                 <div class="options-container">
                                     <a class="option" href=<?php
-                                                            if ($user) {
-                                                                echo "./pages/user.php";
-                                                            } else {
-                                                                echo "./pages/login.php";
-                                                            }
-                                                            ?>>
+                                    if ($user) {
+                                        echo "./pages/user.php";
+                                    } else {
+                                        echo "./pages/login.php";
+                                    }
+                                    ?>>
                                         <img src=<?php
-                                                    if ($user) {
-                                                        echo $user["image"];
-                                                    } else {
-                                                        echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg";
-                                                    }
-                                                    ?>>
+                                        if ($user) {
+                                            echo $user["image"];
+                                        } else {
+                                            echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg";
+                                        }
+                                        ?>>
                                     </a>
-                                    <a class="floating-option" href="./pages/cart.php">
-                                        <img src="./images/shopping-cart.svg">
-                                            <?php
-                                                if(isset($_SESSION["cart"])) echo
-                                                "<div class='cart-label-container'>
+                                    <?php
+                                    if($user && !$user["master"]){
+                                        echo 
+                                            "<a class='floating-option' href='./pages/cart.php'>
+                                                <img src='./images/shopping-cart.svg'>"
+                                                . (isset($_SESSION["cart"]) ? "
+                                                <div class='cart-label-container'>
                                                     <span id='cart-label'>" . count($_SESSION["cart"]) . "</span>
-                                                </div>";
-                                            ?>
-                                    </a>
+                                                </div>
+                                                " : "") .
+                                            "</a>";
+                                    }
+                                    ?>
                                     <div class="another-container">
                                         <a class="floating-menu" id="floating-menu">
                                             <img src="./images/menu.svg">
@@ -91,8 +98,13 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                         </div>
                     </div>
                 </div>
+
+                <div class="tab-content active-tab" style="height: 100%; display: none; justify-content: center; align-items: center;" id="loading-spinner">
+                    <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                </div>
+
                 <!-- Dashboard -->
-                <div class="tab-content flex-d-column container active-tab" id="tab-dashboard">
+                <div class="tab-content flex-d-column container" id="tab-dashboard">
                     <!-- <div class="search-wrapper">
                         <div class="search-container" id="search-container">
                             <div class="input-container">
@@ -106,29 +118,37 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                     <div class="carousel-container px-10">
                         <div class="carousel">
                             <div class="slides fade">
-                                <img src="https://img.freepik.com/free-photo/chicken-wings-barbecue-sweetly-sour-sauce-picnic-summer-menu-tasty-food-top-view-flat-lay_2829-6471.jpg?w=1380&t=st=1711548900~exp=1711549500~hmac=812f87fd25602c0895b89e4bf140debe5908c81c653622f5c03741cc63853d13">
+                                <img
+                                    src="https://img.freepik.com/free-photo/chicken-wings-barbecue-sweetly-sour-sauce-picnic-summer-menu-tasty-food-top-view-flat-lay_2829-6471.jpg?w=1380&t=st=1711548900~exp=1711549500~hmac=812f87fd25602c0895b89e4bf140debe5908c81c653622f5c03741cc63853d13">
                                 <div class="slide-text">
-                                    <h1><span>Savor</span> the Flavors of<br> Authentic Cuisine from<br>Around the World!</h1>
+                                    <h1><span>Savor</span> the Flavors of<br> Authentic Cuisine from<br>Around the
+                                        World!</h1>
                                 </div>
                             </div>
                             <div class="slides fade">
-                                <img src="https://img.freepik.com/free-photo/penne-pasta-tomato-sauce-with-chicken-tomatoes-wooden-table_2829-19744.jpg?w=1380&t=st=1711548932~exp=1711549532~hmac=dacb4bd90d4acab4ba9ac48fa6834763d489c00fa166410d43f314409543dd18">
+                                <img
+                                    src="https://img.freepik.com/free-photo/penne-pasta-tomato-sauce-with-chicken-tomatoes-wooden-table_2829-19744.jpg?w=1380&t=st=1711548932~exp=1711549532~hmac=dacb4bd90d4acab4ba9ac48fa6834763d489c00fa166410d43f314409543dd18">
                                 <div class="slide-text">
                                     <div class="slide-text">
-                                        <h1><span>Experience</span> a Gastronomic <br>Adventure with <br>Every Bite!</h1>
+                                        <h1><span>Experience</span> a Gastronomic <br>Adventure with <br>Every Bite!
+                                        </h1>
                                     </div>
                                 </div>
                             </div>
                             <div class="slides fade">
-                                <img src="https://img.freepik.com/free-photo/american-shrimp-fried-rice-served-with-chili-fish-sauce-thai-food_1150-26585.jpg?w=1380&t=st=1711549026~exp=1711549626~hmac=6d02d4d9208e66abc84ce18543b69a7fb8d0e2d8f841fd99cbf5603bfb4457ea">
+                                <img
+                                    src="https://img.freepik.com/free-photo/american-shrimp-fried-rice-served-with-chili-fish-sauce-thai-food_1150-26585.jpg?w=1380&t=st=1711549026~exp=1711549626~hmac=6d02d4d9208e66abc84ce18543b69a7fb8d0e2d8f841fd99cbf5603bfb4457ea">
                                 <div class="slide-text">
-                                    <h1><span>Tantalize</span> Your <br>Taste Buds with <br>Our Chef's <br>Signature Creations!</h1>
+                                    <h1><span>Tantalize</span> Your <br>Taste Buds with <br>Our Chef's <br>Signature
+                                        Creations!</h1>
                                 </div>
                             </div>
                             <div class="slides fade">
-                                <img src="https://img.freepik.com/free-photo/flame-grilled-meat-cooking-flames-generative-ai_188544-12355.jpg?w=1380&t=st=1711548972~exp=1711549572~hmac=e73ee87745724d6ce0e60ec2699a827cd07ac0ceca4b6f6778409d3d21c50b97">
+                                <img
+                                    src="https://img.freepik.com/free-photo/flame-grilled-meat-cooking-flames-generative-ai_188544-12355.jpg?w=1380&t=st=1711548972~exp=1711549572~hmac=e73ee87745724d6ce0e60ec2699a827cd07ac0ceca4b6f6778409d3d21c50b97">
                                 <div class="slide-text">
-                                    <h1><span>Unleash</span> <br>Your Palate's Potential <br>with Our Unforgettable <br>Culinary Journey!</h1>
+                                    <h1><span>Unleash</span> <br>Your Palate's Potential <br>with Our Unforgettable
+                                        <br>Culinary Journey!</h1>
                                 </div>
                             </div>
 
@@ -196,7 +216,7 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                             $imageUrl = $row["productImage"];
                                             $name = $row["productName"];
                                             $description = $row["productDescription"];
-                                            $price = $row["productPrice"];
+                                            $price = number_format((float)$row["productPrice"], 2);
                                             $category = $row["categoryName"];
 
                                             echo "
@@ -242,7 +262,7 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                         $productId = $row["productId"];
                                         $image = $row["productImage"];
                                         $name = $row["productName"];
-                                        $price = $row["productPrice"];
+                                        $price = number_format((float)$row["productPrice"], 2);
                                         $category = $row["categoryName"];
 
                                         echo "
@@ -295,6 +315,54 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                     </div>
 
                     <div class="orders-list-wrapper">
+                        <?php 
+                            if(isset($user)){
+                                $orders = mysqli_query($sql_connection, $query_orders);
+                                if(mysqli_num_rows($orders) > 0) {
+                                    while($row = mysqli_fetch_array($orders, MYSQLI_ASSOC)) {
+                                        $orderId = $row["orderId"];
+                                        $status = $row["status"];
+                                        $subTotal = number_format((float)$row["subtotal"], 2);
+                                        $dateTime = $row["time"];
+                                        $status = $row["status"];
+    
+                                        $order_items = mysqli_query($sql_connection, $query_orderitems);
+                                        $items = [];
+                                        if(mysqli_num_rows($order_items) > 0) {
+                                            $str = "";
+                                            while($item = mysqli_fetch_array($order_items, MYSQLI_ASSOC)){
+                                                if($item["orderId"] == $orderId) {
+                                                    $str .= "<small>" . $item["productName"] . " x " . $item["qty"] . "</small>";
+                                                    array_push($items, $item);
+                                                }
+                                            }
+                                        }
+    
+                                        echo "<div class='order-container'>
+                                            <div class='order'>
+                                                <div class='order-thumbnail-container'>
+                                                    <img loading='lazy' src='./images/order.png'>
+                                                </div>
+                                                <div class='order-details-container'>
+                                                    <h4 class='p-0 m-0'>Order $orderId - <small>$dateTime</small></h4>
+                                                    <div class='order-items-container'>
+                                                        $str
+                                                    </div>
+                                                    <h4 class='p-0 m-0'>LKR $subTotal</h4>
+                                                </div>
+                                                <div class='order-status-label order-status-$status'>
+                                                    <small>" . strtoupper($status) . "</small>
+                                                </div>
+                                            </div>"
+                                            . ($status == "completed" || $status == "failed" ? 
+                                            "<form action='./pages/reorderHandler.php?orderItems=" . json_encode($items) . "' method='post' class='order-options-container'>
+                                                <button type='submit' name='btnReorder' class='order-option'>Reorder</button>
+                                            </form>" : "") .
+                                        "</div>";
+                                    }
+                                }
+                            }
+                        ?>
                         <div>
                             <div class="page-footer">
                                 <div class="page-footer-content">
@@ -315,7 +383,8 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                 <div class="tab-content flex-d-column container" id="tab-about">
                     <div class="about-us-wrapper">
                         <div class="top-header-container">
-                            <img loading="lazy" src="https://images.pexels.com/photos/5965676/pexels-photo-5965676.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                            <img loading="lazy"
+                                src="https://images.pexels.com/photos/5965676/pexels-photo-5965676.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                             <h1>About Us</h1>
                         </div>
                         <div class="block-container">
@@ -324,11 +393,17 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                     <div class="content-container">
                                         <div class="content">
                                             <h1>Our Story</h1>
-                                            <p>Welcome to Red Dine! We are passionate about providing high-quality dining experiences for our customers. Founded in 2024, Red Dine has been dedicated to serving delicious and healthy meals using locally-sourced ingredients whenever possible. Our team of chefs and food enthusiasts work tirelessly to create innovative dishes that satisfy your taste buds and nourish your body.</p>
+                                            <p>Welcome to Red Dine! We are passionate about providing high-quality
+                                                dining experiences for our customers. Founded in 2024, Red Dine has been
+                                                dedicated to serving delicious and healthy meals using locally-sourced
+                                                ingredients whenever possible. Our team of chefs and food enthusiasts
+                                                work tirelessly to create innovative dishes that satisfy your taste buds
+                                                and nourish your body.</p>
                                         </div>
                                     </div>
                                     <div class="image-container">
-                                        <img loading="lazy" src="https://images.pexels.com/photos/16116627/pexels-photo-16116627/free-photo-of-dramatic-sky-at-sunset.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                                        <img loading="lazy"
+                                            src="https://images.pexels.com/photos/16116627/pexels-photo-16116627/free-photo-of-dramatic-sky-at-sunset.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                                     </div>
                                 </div>
                             </div>
@@ -337,14 +412,19 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                             <div class="block">
                                 <div class="block-content-container">
                                     <div class="image-container">
-                                        <img loading="lazy" src="https://images.pexels.com/photos/7363730/pexels-photo-7363730.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                                        <img loading="lazy"
+                                            src="https://images.pexels.com/photos/7363730/pexels-photo-7363730.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                                     </div>
                                     <div class="content-container">
                                         <div class="content">
                                             <h1>Our Mission</h1>
-                                            <p>At Red Dine, our mission is simple: to make dining enjoyable, convenient, and healthy for everyone.
-                                                We strive to exceed our customers' expectations by providing exceptional service, delicious food, and a welcoming atmosphere.
-                                                Whether you're dining in our restaurant, ordering takeout, or catering an event, we want your experience with Red Dine to be memorable and satisfying.</p>
+                                            <p>At Red Dine, our mission is simple: to make dining enjoyable, convenient,
+                                                and healthy for everyone.
+                                                We strive to exceed our customers' expectations by providing exceptional
+                                                service, delicious food, and a welcoming atmosphere.
+                                                Whether you're dining in our restaurant, ordering takeout, or catering
+                                                an event, we want your experience with Red Dine to be memorable and
+                                                satisfying.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -356,12 +436,16 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                     <div class="content-container">
                                         <div class="content">
                                             <h1>Our Team</h1>
-                                            <p>Meet the faces behind Red Dine! Our team is composed of talented chefs, friendly servers, and dedicated staff who are committed to delivering excellence every day.
-                                                We value teamwork, creativity, and customer satisfaction, and we're always looking for new ways to improve and innovate.</p>
+                                            <p>Meet the faces behind Red Dine! Our team is composed of talented chefs,
+                                                friendly servers, and dedicated staff who are committed to delivering
+                                                excellence every day.
+                                                We value teamwork, creativity, and customer satisfaction, and we're
+                                                always looking for new ways to improve and innovate.</p>
                                         </div>
                                     </div>
                                     <div class="image-container">
-                                        <img loading="lazy" src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                                        <img loading="lazy"
+                                            src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                                     </div>
                                 </div>
                             </div>
@@ -370,7 +454,8 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                             <div class="block">
                                 <div class="block-content-container">
                                     <div class="image-container">
-                                        <img loading="lazy" src="https://images.pexels.com/photos/4064227/pexels-photo-4064227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                                        <img loading="lazy"
+                                            src="https://images.pexels.com/photos/4064227/pexels-photo-4064227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                                     </div>
                                     <div class="content-container">
                                         <div class="content">

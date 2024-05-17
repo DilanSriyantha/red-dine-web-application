@@ -21,8 +21,11 @@ class Tab {
                 activeTabs.item(i).classList.remove("active-tab");
             }
             this.tab.classList.add("active-tab");
+            this.active = true;
+            this._document.location.href = "#" + this.id;
         }else{
             this.tab.classList.remove("active-tab");
+            this.active = false;
         }
     }
 };

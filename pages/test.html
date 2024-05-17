@@ -27,11 +27,17 @@ Copy code
 <body>
 
 <div class="container">
-    <div class="item">Item 1</div>
-    <div class="item">Item 2</div>
-    <div class="item">Item 3</div>
+    <div class="item" onclick="changeHref()">Item 1</div>
+    <div class="item" onclick="changeHref()">Item 2</div>
+    <div class="item" onclick="changeHref()">Item 3</div>
     <!-- Add more items as needed -->
 </div>
+
+<script>
+    function changeHref(){
+        document.location.href = "#" + Math.random();
+    }
+</script>
 
 </body>
 </html>

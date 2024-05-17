@@ -79,16 +79,16 @@ if (isset($_SESSION["cart"]))
                                                         <div class='item-details-container' id='item-details-container-$productId'>
                                                             <span style='font-weight: bold;'>" . $item["productName"] . "</span>
                                                             <small>LKR " . $item["unitCost"] . " x <span id='statement-qty-$productId'>" . $item["qty"] . "</span></small>
-                                                            <span id='total-$productId'>LKR " . $item["total"] . "</span>
+                                                            <span id='total-$productId'>LKR " . number_format((float)$item["total"], 2) . "</span>
                                                         </div>
                                                     </div>
                                                     <div class='item-options-container'>
                                                         <div class='item-options-element'>
-                                                            <button class='minus-button' id='btn-minus-$productId' data-product-id=$productId>-</button>
+                                                            <button type='button' class='minus-button' id='btn-minus-$productId' data-product-id=$productId>-</button>
                                                             <div class='count-container'>
                                                                 <span id='spanQty-$productId'>" . $item["qty"] . "</span>
                                                             </div>
-                                                            <button class='plus-button' id='btn-plus-$productId' data-product-id=$productId>+</button>
+                                                            <button type='button' class='plus-button' id='btn-plus-$productId' data-product-id=$productId>+</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -128,7 +128,7 @@ if (isset($_SESSION["cart"]))
                                     foreach ($cart as $item) {
                                         $total += $item["total"];
                                     }
-                                    echo "<h3 id='subtotal'>LKR " . (float) $total . "/=</h3>";
+                                    echo "<h3 id='subtotal'>LKR " . number_format((float)$total, 2) . "/=</h3>";
                                     ?>
                                 </div>
                             </div>

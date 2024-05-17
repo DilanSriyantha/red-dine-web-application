@@ -1,9 +1,6 @@
 <?php
 session_start();
-$user = null;
-if (isset($_SESSION["user"])) {
-    $user = $_SESSION["user"];
-}
+$user = isset($_SESSION["user"]) ? $_SESSION["user"] : null;
 
 $sql_connection = mysqli_connect("localhost", "root", "", "red-dine", 3306);
 if (mysqli_connect_errno()) {
@@ -11,9 +8,11 @@ if (mysqli_connect_errno()) {
     die("Database connection refused!");
 }
 
-$query_category = "SELECT * FROM `category`";
+$query_category = "SELECT * FROM `category`;";
 $query_popular = "SELECT * FROM (SELECT * FROM `product` WHERE `popular`='1') AS Prods INNER JOIN `category` ON category.categoryId = Prods.categoryId;";
 $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') AS Prods INNER JOIN `category` ON category.categoryId = Prods.categoryId;";
+$query_orders = "SELECT * FROM (SELECT * FROM `orders`) AS Orders INNER JOIN `user` ON user.userId = Orders.userId ORDER BY `orderId` DESC;";
+$query_orderitems = "SELECT * FROM (SELECT * FROM `orderitems`) AS Items INNER JOIN `orders` ON orders.orderId = Items.orderId;";
 ?>
 
 <!DOCTYPE html>
@@ -28,6 +27,7 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
     <link rel="stylesheet" href="../styles/carousel.css" type="text/css">
     <link rel="stylesheet" href="../styles/about-us.css" type="text/css">
     <link rel="stylesheet" href="../styles/web-master-dashboard.css" type="text/css">
+    <link rel="stylesheet" href="../styles/loading-spinner.css" type="text/css">
 </head>
 
 <body>
@@ -36,7 +36,7 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
             <div class="w-100 h-100 display-flex flex-d-column page-wrapper">
                 <div class="menu">
                     <div class="menu-content-wrapper">
-                        <a class="logo-container" href="#">
+                        <a class="logo-container" href="">
                             <img src="../images/red_logo.png">
                         </a>
                         <div class="menu-wrapper">
@@ -71,7 +71,10 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                 </div> -->
                                 <div class="options-container">
                                     <a class="option" href="../pages/user.php">
-                                        <img src=<?php if($user) echo $user["image"]; else echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg"; ?>>
+                                        <img src=<?php if ($user)
+                                            echo $user["image"];
+                                        else
+                                            echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg"; ?>>
                                     </a>
                                     <!-- <a class="floating-option" href="../pages/cart.html">
                                         <img src="../images/shopping-cart.svg">
@@ -105,8 +108,13 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                         </div>
                     </div>
                 </div>
+
+                <div class="tab-content active-tab" style="height: 100%; display: none; justify-content: center; align-items: center;" id="loading-spinner">
+                    <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                </div>
+
                 <!-- Dashboard -->
-                <div class="tab-content flex-d-column container active-tab" id="tab-dashboard">
+                <div class="tab-content flex-d-column container" id="tab-dashboard">
                     <!-- <div class="search-wrapper">
                         <div class="search-container" id="search-container">
                             <div class="input-container">
@@ -171,14 +179,14 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                         <div class="categories-overlay"></div>
                         <div class="container scroll-hide w-100" id="categories-list">
                             <div class="categories-container">
-                                <?php 
-                                    if($result = mysqli_query($sql_connection, $query_category)){
-                                        if($result->num_rows > 0){
-                                            while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-                                                $imageUrl = $row["categoryImage"];
-                                                $id = $row["categoryId"];
-                                                $name = $row["categoryName"];
-                                                echo "
+                                <?php
+                                if ($result = mysqli_query($sql_connection, $query_category)) {
+                                    if ($result->num_rows > 0) {
+                                        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                            $imageUrl = $row["categoryImage"];
+                                            $id = $row["categoryId"];
+                                            $name = $row["categoryName"];
+                                            echo "
                                                 <a class='category-item-container'
                                                     href='../pages/web-master-products.php?categoryId=$id&categoryName=$name'>
                                                     <div class='category-item'>
@@ -187,12 +195,12 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                                     <span>$name</span>
                                                 </a>
                                                 ";
-                                            }
-                                        }else{
-                                            echo "<img src='../images/empty.png'>";
                                         }
-                                        mysqli_free_result($result);
+                                    } else {
+                                        echo "<img src='../images/empty.png'>";
                                     }
+                                    mysqli_free_result($result);
+                                }
                                 ?>
                                 <div class="category-item-container">
                                     <div class="padded-category-item"></div>
@@ -214,17 +222,17 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                         <div class="popular-overlay"></div>
                         <div class="container scroll-hide w-100">
                             <div class="popular-container">
-                                <?php 
+                                <?php
 
-                                    if($result = mysqli_query($sql_connection, $query_popular)){
-                                        if($result->num_rows > 0){
-                                            while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-                                                $productId = $row["productId"];
-                                                $imageUrl = $row["productImage"];
-                                                $name = $row["productName"];
-                                                $categoryName = $row["categoryName"];
-                                                $price = $row["productPrice"];
-                                                echo "
+                                if ($result = mysqli_query($sql_connection, $query_popular)) {
+                                    if ($result->num_rows > 0) {
+                                        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                            $productId = $row["productId"];
+                                            $imageUrl = $row["productImage"];
+                                            $name = $row["productName"];
+                                            $categoryName = $row["categoryName"];
+                                            $price = number_format((float)$row["productPrice"], 2);
+                                            echo "
                                                     <a class='popular-item-container' href='./item-details.php?item_id=$productId'>
                                                         <div class='popular-item'>
                                                             <div class='popular-item-content'>
@@ -241,12 +249,12 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                                             </div>
                                                         </div>
                                                     </a>";
-                                            }
-                                        }else{
-                                            echo "<img src='../images/empty.png'>";
                                         }
-                                        mysqli_free_result($result);
+                                    } else {
+                                        echo "<img src='../images/empty.png'>";
                                     }
+                                    mysqli_free_result($result);
+                                }
                                 ?>
                                 <div class="popular-item-container">
                                     <div class="padded-popular-item"></div>
@@ -263,16 +271,16 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                     <div class="featured-wrapper p-10">
                         <div class="row">
                             <?php
-                                if($result = mysqli_query($sql_connection, $query_featured)){
-                                    if($result->num_rows > 0){
-                                        while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-                                            $productId = $row["productId"];
-                                            $imageUrl = $row["productImage"];
-                                            $name = $row["productName"];
-                                            $categoryName = $row["categoryName"];
-                                            $price = $row["productPrice"];
+                            if ($result = mysqli_query($sql_connection, $query_featured)) {
+                                if ($result->num_rows > 0) {
+                                    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                        $productId = $row["productId"];
+                                        $imageUrl = $row["productImage"];
+                                        $name = $row["productName"];
+                                        $categoryName = $row["categoryName"];
+                                        $price = number_format((float)$row["productPrice"], 2);
 
-                                            echo "
+                                        echo "
                                             <a class='col col-lg featured-item-container' href='./item-details.php?item_id=$productId'>
                                                 <div class='featured-item'>
                                                     <div class='featured-item-thumbnail'>
@@ -281,7 +289,7 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                                     </div>
                                                     <div class='featured-item-details-container'>
                                                         <h4 class='p-0 m-0'>$name</h4>
-                                                        <small>". strtoupper($categoryName) ."</small>
+                                                        <small>" . strtoupper($categoryName) . "</small>
                                                         <h4>LKR $price</h4>
                                                     </div>
                                                     <div class='featured-label'>
@@ -290,12 +298,12 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                                 </div>
                                             </a>
                                             ";
-                                        }
-                                    }else{
-                                        echo "<img src='../images/empty.png'>";
                                     }
-                                    mysqli_free_result($result);
+                                } else {
+                                    echo "<img src='../images/empty.png'>";
                                 }
+                                mysqli_free_result($result);
+                            }
                             ?>
                         </div>
                     </div>
@@ -323,159 +331,81 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                         </div>
                     </div>
 
-                    <div class="orders-list-wrapper">
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
+                    <div class="orders-list-wrapper" id="orders-list-wrapper">
+                        <?php
+                        $orders = mysqli_query($sql_connection, $query_orders);
+                        if (mysqli_num_rows($orders) > 0) {
+                            while ($row = mysqli_fetch_array($orders, MYSQLI_ASSOC)) {
+                                $orderId = $row["orderId"];
+                                $status = $row["status"];
+                                $subTotal = number_format((float) $row["subtotal"], 2);
+                                $dateTime = $row["time"];
+                                $status = $row["status"];
+                                $userName = $row["userName"];
+                                $address =  $row["userAddress"];
+                                $telephone = $row["userContactNumber"];
+
+                                $order_items = mysqli_query($sql_connection, $query_orderitems);
+                                if (mysqli_num_rows($order_items) > 0) {
+                                    $str = "";
+                                    while ($item = mysqli_fetch_array($order_items, MYSQLI_ASSOC)) {
+                                        if ($item["orderId"] == $orderId)
+                                            $str .= "<small>" . $item["productName"] . " x " . $item["qty"] . "</small>";
+                                    }
+                                }
+
+                                echo "<div class='order-container'>
+                                        <div class='order'>
+                                            <div class='order-thumbnail-container'>
+                                                <img loading='lazy' src='../images/order.png' style='object-fit: contain;'>
+                                            </div>
+                                            <div class='order-details-container'>
+                                                <h4 class='p-0 m-0'>Order $orderId - <small>$dateTime</small></h4>
+                                                <div class='order-items-container'>
+                                                    <h4 style='margin-bottom: 0'>Items</h4>
+                                                    $str
+                                                </div>
+                                                <hr class='m-0 p-0'>
+                                                <div>
+                                                    <h4 style='margin-bottom: 0'>Customer Information</h4>
+                                                    <table>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><small>User name</small></td>
+                                                                <td><small> - </small></td>
+                                                                <td><small>$userName</small></td>
+                                                            </tr>
+                                                            <tr style='max-width: 150px;'>
+                                                                <td><small>Address</small></td>
+                                                                <td><small> - </small></td>
+                                                                <td style='word-wrap: break-word; text-wrap: wrap;'><small>$address</small></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><small>Telephone</small></td>
+                                                                <td><small> - </small></td>
+                                                                <td><small>$telephone</small></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <hr style='margin-left: 0; margin-right: 0;'>
+                                                <small>Subtotal</small>
+                                                <h4 class='p-0 m-0'>LKR $subTotal</h4>
+                                            </div>
+                                            <div class='order-status-label order-status-$status'>
+                                                <small>" . strtoupper($status) . "</small>
+                                            </div>
+                                        </div>
+                                        <form action='./orderStateChangeHandler.php?orderId=$orderId' method='post' class='order-actions-container' id='order-state-form'>
+                                            <button type='submit' name='action' value='pending' class='order-action-pending" . ($status == 'pending' ? "-active" : "") . "'>Pending</button>
+                                            <button type='submit' name='action' value='dispatched' class='order-action-dispatched" . ($status == 'dispatched' ? "-active" : "") . "'>Dispatched</button>
+                                            <button type='submit' name='action' value='failed' class='order-action-failed" . ($status == 'failed' ? "-active" : "") . "'>Failed</button>
+                                            <button type='submit' name='action' value='completed' class='order-action-completed" . ($status == 'completed' ? "-active" : "") . "'>Completed</button>
+                                        </form>
+                                    </div>";
+                            }
+                        }
+                        ?>
                         <div>
                             <div class="page-footer">
                                 <div class="page-footer-content">
@@ -496,7 +426,8 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                 <div class="tab-content flex-d-column container" id="tab-about">
                     <div class="about-us-wrapper">
                         <div class="top-header-container">
-                            <img loading="lazy" src="https://images.pexels.com/photos/5965676/pexels-photo-5965676.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                            <img loading="lazy"
+                                src="https://images.pexels.com/photos/5965676/pexels-photo-5965676.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                             <h1>About Us</h1>
                         </div>
                         <div class="block-container">
@@ -514,7 +445,8 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                         </div>
                                     </div>
                                     <div class="image-container">
-                                        <img loading="lazy" src="https://images.pexels.com/photos/16116627/pexels-photo-16116627/free-photo-of-dramatic-sky-at-sunset.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                                        <img loading="lazy"
+                                            src="https://images.pexels.com/photos/16116627/pexels-photo-16116627/free-photo-of-dramatic-sky-at-sunset.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                                     </div>
                                 </div>
                             </div>
@@ -523,7 +455,8 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                             <div class="block">
                                 <div class="block-content-container">
                                     <div class="image-container">
-                                        <img loading="lazy" src="https://images.pexels.com/photos/7363730/pexels-photo-7363730.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                                        <img loading="lazy"
+                                            src="https://images.pexels.com/photos/7363730/pexels-photo-7363730.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                                     </div>
                                     <div class="content-container">
                                         <div class="content">
@@ -554,7 +487,8 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                                         </div>
                                     </div>
                                     <div class="image-container">
-                                        <img loading="lazy" src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                                        <img loading="lazy"
+                                            src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                                     </div>
                                 </div>
                             </div>
@@ -563,7 +497,8 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                             <div class="block">
                                 <div class="block-content-container">
                                     <div class="image-container">
-                                        <img loading="lazy" src="https://images.pexels.com/photos/4064227/pexels-photo-4064227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
+                                        <img loading="lazy"
+                                            src="https://images.pexels.com/photos/4064227/pexels-photo-4064227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1">
                                     </div>
                                     <div class="content-container">
                                         <div class="content">
@@ -610,7 +545,8 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
     </div>
     <div class="backdrop" id="backdrop"></div>
     <div class="popup-container-add-category popup-container" id="add-category-popup">
-        <form class="add-category-form form" id="login-form" action="addCategoryHandler" method="post" enctype="multipart/form-data">
+        <form class="add-category-form form" id="login-form" action="addCategoryHandler" method="post"
+            enctype="multipart/form-data">
             <div class="form-header">
                 Add Category
                 <div class="close-btn-container">
@@ -618,13 +554,18 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
                 </div>
             </div>
             <div style="display: flex; margin: 10px;">
-                <button type="button" class="image-option-button image-option-button-selected" id="image-option-file" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">File</button>
-                <button type="button" class="image-option-button" id="image-option-url" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">URL</button>
+                <button type="button" class="image-option-button image-option-button-selected" id="image-option-file"
+                    style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">File</button>
+                <button type="button" class="image-option-button" id="image-option-url"
+                    style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">URL</button>
             </div>
             <div style="display: flex; justify-content: center;">
-                <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; cursor: pointer;" id="item-image-preview">
+                <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; cursor: pointer;"
+                    id="item-image-preview">
             </div>
-            <input type="file" id="item-image-input" placeholder="Category Image" accept="image/*" style="display: none;" name="imageFile">
+            <input type="file" id="item-image-input" placeholder="Category Image" accept="image/*"
+                style="display: none;" name="imageFile">
             <input type="url" id="item-image-url" placeholder="URL" name="category-image-url" required hidden>
             <input type="text" name="category-name" id="cat-caption" placeholder="Category Caption" required>
             <!-- <div>
@@ -692,8 +633,6 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
 <script src="../scripts/WebMasterFunctions/web-master-functions.js"></script>
 <script src="../scripts/utils.js"></script>
 <script>
-    let imageOption = 0; // file, >0 = URL
-
     const addBtns = document.getElementsByClassName("add-button");
     const backdrop = document.getElementById("backdrop");
 
@@ -710,49 +649,9 @@ $query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') 
         popups.push(popup);
         popup.initTriggers();
     }
-
-    // for (var i = 0; i < imageOptionButtons.length; i++) {
-    //     imageOptionButtons.item(i).addEventListener("click", (e) => {
-    //         const selectedImageOptions = document.getElementsByClassName("image-option-button-selected");
-    //         for (var i = 0; i < selectedImageOptions.length; i++) {
-    //             selectedImageOptions.item(i).classList.remove("image-option-button-selected");
-    //         }
-    //         e.target.classList.add("image-option-button-selected");
-    //         imageOption === 0 ? imageOption = 1 : imageOption = 0;
-
-    //         updateCategoryPopup();
-    //     });
-    // }
-
-    // const updateCategoryPopup = () => {
-    //     if (imageOption === 0) {
-    //         categoryImageUrl.setAttribute("hidden", true);
-    //     } else {
-    //         categoryImageUrl.removeAttribute("hidden");
-    //     }
-    // };
-
-    // categoryImagePreview.addEventListener("click", (e) => {
-    //     categoryImageInput.click();
-    // });
-
-    // categoryImageInput.addEventListener("input", async (e) => {
-    //     try {
-    //         const base64 = await Utils.compressImage(e.target.files[0]);
-    //         if (base64) {
-    //             categoryImagePreview.src = base64;
-    //             categoryImageUrl.value = base64;
-    //         }
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // });
-
-    // categoryImageUrl.addEventListener("input", (e) => {
-    //     categoryImagePreview.src = e.target.value;
-    // });
 </script>
 <?php
-    mysqli_close($sql_connection);
+mysqli_close($sql_connection);
 ?>
+
 </html>

@@ -17,7 +17,7 @@ if (mysqli_num_rows($result) > 0) {
         $id = $row["productId"];
         $imageUrl = $row["productImage"];
         $name = $row["productName"];
-        $price = $row["productPrice"];
+        $price = number_format((float)$row["productPrice"], 2);
         $category = $row["categoryName"];
         echo "
             <a class='col col-lg product-item-container' href='../pages/item-details.php?item_id=$id' id='$id'>

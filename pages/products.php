@@ -40,9 +40,9 @@ $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId=$
                         <div class="menu-wrapper">
                             <div class="menu-container">
                                 <div class="menu-strip">
-                                    <form class="search-container">
-                                        <input type="text" id="search-input">
-                                        <button type="button" id="search-button">
+                                    <form class="search-container" id="search-form">
+                                        <input class="m-0" type="text" id="search-input">
+                                        <button type="submit" id="search-button">
                                             <img src="../images/search.svg">
                                         </button>
                                     </form>
@@ -77,12 +77,13 @@ $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId=$
                         if ($result = mysqli_query($sql_connection, $query)) {
                             if ($result->num_rows > 0) {
                                 while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                    $id = $row["productId"];
                                     $imageUrl = $row["productImage"];
                                     $name = $row["productName"];
+                                    $price = number_format((float)$row["productPrice"], 2);
                                     $category = $row["categoryName"];
-                                    $price = $row["productPrice"];
                                     echo "
-                                        <a class='col col-lg product-item-container' href='../pages/item-details.php?item_id=5115315395' id='5115315395'>
+                                        <a class='col col-lg product-item-container' href='../pages/item-details.php?item_id=$id' id='$id'>
                                             <div class='product-item'>
                                                 <div class='product-item-thumbnail'>
                                                     <img loading='lazy' src='$imageUrl'>
@@ -119,6 +120,27 @@ $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId=$
 
     <script src="../scripts/productsFunctions/product.js"></script>
     <!-- <script src="../scripts/productsFunctions/products-functions.js"></script> -->
+    <script>
+        const searchForm = document.getElementById("search-form");
+        const txtSearch = document.getElementById("search-input");
+        const btnSearch = document.getElementById("search-button");
+        searchForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            try{
+                const urlParams = new URLSearchParams(window.location.search);
+                const res = await fetch("./productsSearchHandler.php?categoryId=" + urlParams.get("categoryId") + "&searchQuery=" + txtSearch.value, {
+                    method: "GET"
+                });
+                if(res){
+                    const productsList = document.getElementById("products-list");
+                    productsList.innerHTML = await res.text();
+                }
+            }catch(err){
+                console.log(err);
+            }
+        }); 
+    </script>
 </body>
 
 </html>

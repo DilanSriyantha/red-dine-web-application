@@ -37,7 +37,7 @@ $result = mysqli_query($sql_connection, $query);
             <div class="w-100 h-100 display-flex flex-d-column content-wrapper">
                 <div class="menu">
                     <div class="menu-content-wrapper">
-                        <a class="logo-container" href=<?php if($user["master"]) echo "./web-master-dashboard.php"; else echo "../index.php" ?>>
+                        <a class="logo-container" href='<?php if($user && $user["master"]) echo "./web-master-dashboard.php"; else echo "../index.php";?>'>
                             <img src="../images/red_logo.png">
                         </a>
                         <div class="menu-wrapper">
@@ -59,7 +59,7 @@ $result = mysqli_query($sql_connection, $query);
                                         ?>>
                                     </a>
                                     <?php
-                                    if(!$user["master"]){
+                                    if($user && !$user["master"]){
                                         echo 
                                             "<a class='floating-option' href='../pages/cart.php'>
                                                 <img src='../images/shopping-cart.svg'>"
@@ -83,7 +83,7 @@ $result = mysqli_query($sql_connection, $query);
                         $item = mysqli_fetch_array($result, MYSQLI_ASSOC);
                         $image = $item["productImage"];
                         $name = $item["productName"];
-                        $price = $item["productPrice"];
+                        $price = number_format((float)$item["productPrice"], 2);
                         $veg = $item["veg"];
                         $description = $item["productDescription"];
 
@@ -109,7 +109,7 @@ $result = mysqli_query($sql_connection, $query);
                     }
                     ?>
                     <?php 
-                    if(!$user["master"]) echo 
+                    if($user && !$user["master"]) echo 
                     "<div class='specs-container'>
                         <form action='cartHandler.php?action=add&productId=$id' method='post' class='specs-wrapper'>
                             <div class='add-to-cart-option-container'>

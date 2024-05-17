@@ -23,7 +23,7 @@ function getTotal() {
         $total += $item["total"];
     }
 
-    echo $total;
+    echo number_format((float)$total, 2);
 }
 
 function updateCart()
@@ -41,7 +41,7 @@ function updateCart()
                 <div class='item-details-container' id='item-details-container-$productId'>
                     <span style='font-weight: bold;'>" . $item["productName"] . "</span>
                     <small>LKR " . $item["unitCost"] . " x <span id='statement-qty-$productId'>" . $item["qty"] . "</span></small>
-                    <span id='total-$productId'>LKR " . $item["total"] . "</span>
+                    <span id='total-$productId'>LKR " . number_format((float)$item["total"], 2) . "</span>
                 </div>
             ";
 

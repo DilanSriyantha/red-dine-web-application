@@ -123,6 +123,12 @@
         width: max-content !important;
         gap: 10px !important;
     }
+
+    .order-actions-container {
+        /* background-color: rebeccapurple; */
+        width: 30% !important;
+        margin-left: auto;
+    }
 }
 
 @media (max-width: 448px){
@@ -828,8 +834,9 @@
     width: 100%;
     border-radius: 20px;
     /* margin-bottom: 10px; */
-    /* background-color: #545454; */
+    background-color: #313131;
     position: relative;
+    margin-bottom: 10px;
 }
 
 .order-status-label {
@@ -837,10 +844,93 @@
     top: 0;
     left: 0;
     /* margin: 10px; */
-    background-color: #198754;
+
     padding: 5px;
     border-radius: 10px;
     font-weight: bold;
+}
+
+.order-status-pending {
+    background-color: #E4A11B;
+}
+
+.order-status-dispatched {
+    background-color: #3B71CA;
+}
+
+.order-status-failed {
+    background-color: #DC4C64;
+}
+
+.order-status-completed {
+    background-color: #14A44D;
+}
+
+.order-actions-container {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    /* background-color: rebeccapurple; */
+    margin-right: 10px;
+    gap: 5px;
+    justify-content: center;
+    margin-left: auto;
+}
+
+.order-action-pending {
+    background-color: transparent;
+    border: 1px solid #E4A11B !important;
+    color: #E4A11B;
+}
+
+.order-action-dispatched {
+    background-color: transparent;
+    border: 1px solid #3B71CA !important;
+    color: #3B71CA;
+}
+
+.order-action-failed {
+    background-color: transparent;
+    border: 1px solid #DC4C64 !important;
+    color: #DC4C64;
+}
+
+.order-action-completed {
+    background-color: transparent;
+    border: 1px solid #14A44D !important;
+    color: #14A44D;
+}
+
+.order-action-pending-active {
+    background-color: #E4A11B;
+    border: 1px solid #E4A11B !important;
+    color: #ececec;
+}
+
+.order-action-dispatched-active {
+    background-color: #3B71CA;
+    border: 1px solid #3B71CA !important;
+    color: #ececec;
+}
+
+.order-action-failed-active {
+    background-color: #DC4C64;
+    border: 1px solid #DC4C64 !important;
+    color: #ececec;
+}
+
+.order-action-completed-active {
+    background-color: #14A44D;
+    border: 1px solid #14A44D !important;
+    color: #ececec;
+}
+
+.order-actions-container button {
+    padding: 5px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    cursor: pointer;
 }
 
 .order-container .order {
