@@ -80,7 +80,7 @@ $storage = $factory
 $bucket = $storage->getBucket();
 ```
 
-5. **Setup the Database:** Import the provided SQL file to set up the database.
+5. **Setup the Database:** Import the provided SQL file to set up the database. (`red-dine.sql` file can be found within the project directory iteself)
 ```sql
 CREATE DATABASE red-dine;
 USE red-dine;
