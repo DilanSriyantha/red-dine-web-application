@@ -12,8 +12,8 @@ if (mysqli_connect_errno()) {
 }
 
 $query_category = "SELECT * FROM `category`";
-$query_popular = "SELECT * FROM `product` WHERE `popular`='1'";
-$query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
+$query_popular = "SELECT * FROM (SELECT * FROM `product` WHERE `popular`='1') AS Prods INNER JOIN `category` ON category.categoryId = Prods.categoryId;";
+$query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') AS Prods INNER JOIN `category` ON category.categoryId = Prods.categoryId;";
 ?>
 
 <!DOCTYPE html>
@@ -205,10 +205,10 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                             <h3 class="p-0 m-0">Popular Dishes</h3>
                             <small><span class="color-red">Hey, </span>take a look at our popular dishes</small>
                         </div>
-                        <div class="add-button">
+                        <!-- <div class="add-button">
                             <img src="../images/plus.svg">
                             Add
-                        </div>
+                        </div> -->
                     </div>
                     <div class="popular-wrapper">
                         <div class="popular-overlay"></div>
@@ -219,11 +219,13 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                     if($result = mysqli_query($sql_connection, $query_popular)){
                                         if($result->num_rows > 0){
                                             while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
+                                                $productId = $row["productId"];
                                                 $imageUrl = $row["productImage"];
                                                 $name = $row["productName"];
-                                                $price = $row["price"];
+                                                $categoryName = $row["categoryName"];
+                                                $price = $row["productPrice"];
                                                 echo "
-                                                    <a class='popular-item-container' href='item-details.html'>
+                                                    <a class='popular-item-container' href='./item-details.php?item_id=$productId'>
                                                         <div class='popular-item'>
                                                             <div class='popular-item-content'>
                                                                 <div class='popular-item-thumbnail'>
@@ -231,11 +233,9 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                                                 </div>
                                                                 <div class='details-container'>
                                                                     <div class='details-content'>
-                                                                        <h4 class='p-0 m-0'>Lorem ipsum dolor sit amet consectetur
-                                                                            adipisicing elit. Aliquid corporis modi, at maiores quae error
-                                                                            repellat dignissimos sit earum. Blanditiis.</h4>
-                                                                        <small>$name</small>
-                                                                        <h4>$ $price</h4>
+                                                                        <h4 class='p-0 m-0'>$name</h4>
+                                                                        <small>" . strtoupper($categoryName) . "</small>
+                                                                        <h4>LKR $price</h4>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -259,54 +259,21 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                             <h3 class="p-0 m-0">Featured Dishes</h3>
                             <small><span class="color-red">Featured</span> Dishes</small>
                         </div>
-                        <div class="add-button">
-                            <img src="../images/plus.svg">
-                            Add
-                        </div>
                     </div>
                     <div class="featured-wrapper p-10">
-                        <!-- <div class="featured-container row">
-                            <div class="featured-item-container col col-xl">
-                                <div class="featured-item">
-                                    <div class="featured-item-content">
-                                        <div class="featured-item-thumbnail">
-                                            <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                        </div>
-                                        <div class="featured-item-details-content">
-                                            <p><h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. In blanditiis quasi eveniet tempore itaque nesciunt assumenda est laudantium. Doloremque, expedita?</h4></p>
-                                            <small>Pizza</small>
-                                            <h4>$ 10.00</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="featured-item-container col col-lg">
-                                <div class="featured-item">
-                                    <div class="featured-item-content">
-                                        <div class="featured-item-thumbnail">
-                                            <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                        </div>
-                                        <div class="featured-item-details-content">
-                                            <p><h4 class="p-0 m-0">Lorem ipsum dolor sit amet</h4></p>
-                                            <small>Pizza</small>
-                                            <h4>$ 10.00</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
-
                         <div class="row">
                             <?php
                                 if($result = mysqli_query($sql_connection, $query_featured)){
                                     if($result->num_rows > 0){
                                         while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)){
+                                            $productId = $row["productId"];
                                             $imageUrl = $row["productImage"];
                                             $name = $row["productName"];
+                                            $categoryName = $row["categoryName"];
                                             $price = $row["productPrice"];
 
                                             echo "
-                                            <div class='col col-lg featured-item-container'>
+                                            <a class='col col-lg featured-item-container' href='./item-details.php?item_id=$productId'>
                                                 <div class='featured-item'>
                                                     <div class='featured-item-thumbnail'>
                                                         <img loading='lazy'
@@ -314,14 +281,14 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                                     </div>
                                                     <div class='featured-item-details-container'>
                                                         <h4 class='p-0 m-0'>$name</h4>
-                                                        <small>". strtoupper($name) ."</small>
-                                                        <h4>$$price</h4>
+                                                        <small>". strtoupper($categoryName) ."</small>
+                                                        <h4>LKR $price</h4>
                                                     </div>
                                                     <div class='featured-label'>
                                                         <small>FEATURED</small>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </a>
                                             ";
                                         }
                                     }else{
@@ -655,10 +622,10 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                 <button type="button" class="image-option-button" id="image-option-url" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">URL</button>
             </div>
             <div style="display: flex; justify-content: center;">
-                <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; cursor: pointer;" id="category-image-preview">
+                <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; cursor: pointer;" id="item-image-preview">
             </div>
-            <input type="file" id="category-image-input" placeholder="Category Image" accept="image/*" style="display: none;" name="imageFile">
-            <input type="url" id="category-image-url" placeholder="URL" name="category-image-url" required hidden>
+            <input type="file" id="item-image-input" placeholder="Category Image" accept="image/*" style="display: none;" name="imageFile">
+            <input type="url" id="item-image-url" placeholder="URL" name="category-image-url" required hidden>
             <input type="text" name="category-name" id="cat-caption" placeholder="Category Caption" required>
             <!-- <div>
                 <hr>
@@ -729,10 +696,6 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
 
     const addBtns = document.getElementsByClassName("add-button");
     const backdrop = document.getElementById("backdrop");
-    const imageOptionButtons = document.getElementsByClassName("image-option-button");
-    const categoryImagePreview = document.getElementById("category-image-preview");
-    const categoryImageInput = document.getElementById("category-image-input");
-    const categoryImageUrl = document.getElementById("category-image-url");
 
     const popupsIds = [
         "add-category-popup",
@@ -745,52 +708,49 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
     for (var i = 0; i < addBtns.length; i++) {
         var popup = new Popup(addBtns.item(i), document.getElementById(popupsIds[i]), backdrop);
         popups.push(popup);
+        popup.initTriggers();
     }
 
-    popups.forEach((p) => {
-        p.initTriggers();
-    });
+    // for (var i = 0; i < imageOptionButtons.length; i++) {
+    //     imageOptionButtons.item(i).addEventListener("click", (e) => {
+    //         const selectedImageOptions = document.getElementsByClassName("image-option-button-selected");
+    //         for (var i = 0; i < selectedImageOptions.length; i++) {
+    //             selectedImageOptions.item(i).classList.remove("image-option-button-selected");
+    //         }
+    //         e.target.classList.add("image-option-button-selected");
+    //         imageOption === 0 ? imageOption = 1 : imageOption = 0;
 
-    for (var i = 0; i < imageOptionButtons.length; i++) {
-        imageOptionButtons.item(i).addEventListener("click", (e) => {
-            const selectedImageOptions = document.getElementsByClassName("image-option-button-selected");
-            for (var i = 0; i < selectedImageOptions.length; i++) {
-                selectedImageOptions.item(i).classList.remove("image-option-button-selected");
-            }
-            e.target.classList.add("image-option-button-selected");
-            imageOption === 0 ? imageOption = 1 : imageOption = 0;
+    //         updateCategoryPopup();
+    //     });
+    // }
 
-            updateCategoryPopup();
-        });
-    }
+    // const updateCategoryPopup = () => {
+    //     if (imageOption === 0) {
+    //         categoryImageUrl.setAttribute("hidden", true);
+    //     } else {
+    //         categoryImageUrl.removeAttribute("hidden");
+    //     }
+    // };
 
-    const updateCategoryPopup = () => {
-        if (imageOption === 0) {
-            categoryImageUrl.setAttribute("hidden", true);
-        } else {
-            categoryImageUrl.removeAttribute("hidden");
-        }
-    };
+    // categoryImagePreview.addEventListener("click", (e) => {
+    //     categoryImageInput.click();
+    // });
 
-    categoryImagePreview.addEventListener("click", (e) => {
-        categoryImageInput.click();
-    });
+    // categoryImageInput.addEventListener("input", async (e) => {
+    //     try {
+    //         const base64 = await Utils.compressImage(e.target.files[0]);
+    //         if (base64) {
+    //             categoryImagePreview.src = base64;
+    //             categoryImageUrl.value = base64;
+    //         }
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // });
 
-    categoryImageInput.addEventListener("input", async (e) => {
-        try {
-            const base64 = await Utils.compressImage(e.target.files[0]);
-            if (base64) {
-                categoryImagePreview.src = base64;
-                categoryImageUrl.value = base64;
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    });
-
-    categoryImageUrl.addEventListener("input", (e) => {
-        categoryImagePreview.src = e.target.value;
-    });
+    // categoryImageUrl.addEventListener("input", (e) => {
+    //     categoryImagePreview.src = e.target.value;
+    // });
 </script>
 <?php
     mysqli_close($sql_connection);

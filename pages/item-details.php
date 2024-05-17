@@ -1,6 +1,7 @@
 <?php
 session_start();
 $user = null;
+
 if (isset($_SESSION["user"]))
     $user = $_SESSION["user"];
 
@@ -58,13 +59,17 @@ $result = mysqli_query($sql_connection, $query);
                                         ?>>
                                     </a>
                                     <?php
-                                    if(!$user["master"]) echo
-                                        "<a class='floating-option' href='../pages/cart.php'>
-                                            <img src='../images/shopping-cart.svg'>
-                                            <div class='cart-label-container'>
-                                                <span id='cart-label'>9+</span>
-                                            </div>
-                                        </a>";
+                                    if(!$user["master"]){
+                                        echo 
+                                            "<a class='floating-option' href='../pages/cart.php'>
+                                                <img src='../images/shopping-cart.svg'>"
+                                                . (isset($_SESSION["cart"]) ? "
+                                                <div class='cart-label-container'>
+                                                    <span id='cart-label'>" . count($_SESSION["cart"]) . "</span>
+                                                </div>
+                                                " : "") .
+                                            "</a>";
+                                    }
                                     ?>
 
                                 </div>
@@ -91,7 +96,7 @@ $result = mysqli_query($sql_connection, $query);
                                 <img loading='lazy' src='$image'>
                             </div>
                             <div class='name-container'>
-                                <h2 class='p-0 m-0 price-tag'>$price</h2>
+                                <h2 class='p-0 m-0 price-tag'>LKR $price</h2>
                                 <h2 class='p-0 m-0'>$name</h2>
                             </div>
                             <div class='content-container display-flex flex-d-row'>
@@ -106,14 +111,14 @@ $result = mysqli_query($sql_connection, $query);
                     <?php 
                     if(!$user["master"]) echo 
                     "<div class='specs-container'>
-                        <div class='specs-wrapper'>
+                        <form action='cartHandler.php?action=add&productId=$id' method='post' class='specs-wrapper'>
                             <div class='add-to-cart-option-container'>
-                                <button class='minus-one-button' id='btn-minus-one'>-</button>
+                                <button type='button' class='minus-one-button' id='btn-minus-one'>-</button>
                                 <input type='number' value=1 id='txtQty' name='txtQty'>
-                                <button class='plus-one-button' id='btn-plus-one'>+</button>
+                                <button type='button' class='plus-one-button' id='btn-plus-one'>+</button>
                             </div>
-                            <button class='add-to-cart-button' id='btn-add-to-cart'>+ Add to cart</button>
-                        </div>
+                            <button type='submit' class='add-to-cart-button' id='btn-add-to-cart'>+ Add to cart</button>
+                        </form>
                     </div>";
                     ?>
                 </div>

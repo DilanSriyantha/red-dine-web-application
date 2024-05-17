@@ -12,8 +12,8 @@ if (mysqli_connect_errno()) {
 }
 
 $query_category = "SELECT * FROM `category`";
-$query_popular = "SELECT * FROM `product` WHERE `popular`='1'";
-$query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
+$query_popular = "SELECT * FROM (SELECT * FROM `product` WHERE `popular`='1') AS Prods INNER JOIN `category` ON category.categoryId = Prods.categoryId;";
+$query_featured = "SELECT * FROM (SELECT * FROM `product` WHERE `featured`='1') AS Prods INNER JOIN `category` ON category.categoryId = Prods.categoryId;";
 ?>
 
 <!DOCTYPE html>
@@ -58,9 +58,12 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                     </a>
                                     <a class="floating-option" href="./pages/cart.php">
                                         <img src="./images/shopping-cart.svg">
-                                        <div class="cart-label-container">
-                                            <span id="cart-label">9+</span>
-                                        </div>
+                                            <?php
+                                                if(isset($_SESSION["cart"])) echo
+                                                "<div class='cart-label-container'>
+                                                    <span id='cart-label'>" . count($_SESSION["cart"]) . "</span>
+                                                </div>";
+                                            ?>
                                     </a>
                                     <div class="another-container">
                                         <a class="floating-menu" id="floating-menu">
@@ -189,12 +192,15 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                 if ($result = mysqli_query($sql_connection, $query_popular)) {
                                     if ($result->num_rows > 0) {
                                         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                            $productId = $row["productId"];
                                             $imageUrl = $row["productImage"];
                                             $name = $row["productName"];
-                                            $price = $row["price"];
+                                            $description = $row["productDescription"];
+                                            $price = $row["productPrice"];
+                                            $category = $row["categoryName"];
 
                                             echo "
-                                                    <a class='popular-item-container' href='item-details.php'>
+                                                    <a class='popular-item-container' href='./pages/item-details.php?item_id=$productId'>
                                                         <div class='popular-item'>
                                                             <div class='popular-item-content'>
                                                                 <div class='popular-item-thumbnail'>
@@ -202,9 +208,9 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                                                                 </div>
                                                                 <div class='details-container'>
                                                                     <div class='details-content'>
-                                                                        <h4 class='p-0 m-0'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid corporis modi, at maiores quae error repellat dignissimos sit earum. Blanditiis.</h4>
-                                                                        <small>$name</small>
-                                                                        <h4>$ $price</h4>
+                                                                        <h4 class='p-0 m-0'>$name</h4>
+                                                                        <small>" . strtoupper($category) . "</small>
+                                                                        <h4>LKR $price</h4>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -228,62 +234,33 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                         <small><span class="color-red">Featured</span> Dishes</small>
                     </div>
                     <div class="featured-wrapper p-10">
-                        <!-- <div class="featured-container row">
-                            <div class="featured-item-container col col-xl">
-                                <div class="featured-item">
-                                    <div class="featured-item-content">
-                                        <div class="featured-item-thumbnail">
-                                            <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                        </div>
-                                        <div class="featured-item-details-content">
-                                            <p><h4 class="p-0 m-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. In blanditiis quasi eveniet tempore itaque nesciunt assumenda est laudantium. Doloremque, expedita?</h4></p>
-                                            <small>Pizza</small>
-                                            <h4>$ 10.00</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="featured-item-container col col-lg">
-                                <div class="featured-item">
-                                    <div class="featured-item-content">
-                                        <div class="featured-item-thumbnail">
-                                            <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                        </div>
-                                        <div class="featured-item-details-content">
-                                            <p><h4 class="p-0 m-0">Lorem ipsum dolor sit amet</h4></p>
-                                            <small>Pizza</small>
-                                            <h4>$ 10.00</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> -->
-
                         <div class="row">
                             <?php
-                            if ($result = mysqli_query($sql_connection, $query_popular)) {
+                            if ($result = mysqli_query($sql_connection, $query_featured)) {
                                 if ($result->num_rows > 0) {
                                     while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                                        $imageUrl = $row["imagebase64"];
-                                        $name = $row["name"];
-                                        $price = $row["price"];
+                                        $productId = $row["productId"];
+                                        $image = $row["productImage"];
+                                        $name = $row["productName"];
+                                        $price = $row["productPrice"];
+                                        $category = $row["categoryName"];
 
                                         echo "
-                                            <div class='col col-lg featured-item-container'>
+                                            <a class='col col-lg featured-item-container' href='./pages/item-details.php?item_id=$productId'>
                                                 <div class='featured-item'>
                                                     <div class='featured-item-thumbnail'>
-                                                        <img loading='lazy' src='$imageUrl'>
+                                                        <img loading='lazy' src='$image'>
                                                     </div>
                                                     <div class='featured-item-details-container'>
                                                         <h4 class='p-0 m-0'>$name</h4>
-                                                        <small>$name</small>
-                                                        <h4>$ $price</h4>
+                                                        <small>" . strtoupper($category) . "</small>
+                                                        <h4>LKR $price</h4>
                                                     </div>
                                                     <div class='featured-label'>
                                                         <small>FEATURED</small>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            </a>
                                                 ";
                                     }
                                 } else {
@@ -318,159 +295,6 @@ $query_featured = "SELECT * FROM `product` WHERE `featured`='1'";
                     </div>
 
                     <div class="orders-list-wrapper">
-                        <!-- <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="order-container">
-                            <div class="order">
-                                <div class="order-thumbnail-container">
-                                    <img loading="lazy" src="https://www.yamu.lk/wp-content/uploads/2022/01/A18C1C0B-8541-419B-BEE9-A11154A39DBF-1024x739.jpeg">
-                                </div>
-                                <div class="order-details-container">
-                                    <h4 class="p-0 m-0">Order id</h4>
-                                    <div class="order-items-container">
-                                        <small>Kottu Roti x 1</small>
-                                    </div>
-                                    <h4 class="p-0 m-0">$9.99</h4>
-                                </div>
-                                <div class="order-status-label">
-                                    <small>COMPLETED</small>
-                                </div>
-                            </div>
-                            <div class="order-options-container">
-                                <button class="order-option">Reorder</button>
-                            </div>
-                        </div> -->
-                        
                         <div>
                             <div class="page-footer">
                                 <div class="page-footer-content">

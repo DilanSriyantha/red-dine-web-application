@@ -2,6 +2,7 @@ class Popup {
     triggerBtn = undefined;
     popupElement = undefined;
     backdrop = undefined;
+    imageOption = 0;
 
     constructor(triggerBtn, popupElement, backdrop){
         this.triggerBtn = triggerBtn;
@@ -11,6 +12,7 @@ class Popup {
 
     initTriggers(){
         this.triggerBtn.addEventListener("click", (e) => {
+            e.preventDefault();
             this.open();
         }); 
 
@@ -22,6 +24,49 @@ class Popup {
                     this.close();
                 }); 
             }
+        }
+
+        const imageOptionButtons = this.popupElement.getElementsByClassName("image-option-button");
+        for(var i = 0; i < imageOptionButtons.length; i++){
+            imageOptionButtons.item(i).addEventListener("click", (e) => {
+                const selectedImageOptions = this.popupElement.getElementsByClassName("image-option-button-selected");
+                for(var i = 0; i < selectedImageOptions.length; i++){
+                    selectedImageOptions.item(i).classList.remove("image-option-button-selected");
+                }
+                e.target.classList.add("image-option-button-selected");
+                this.imageOption === 0 ? this.imageOption = 1 : this.imageOption = 0;
+
+                this.updateItemPopup();
+            });
+        }
+
+        const itemImagePreview = this.getElementById("item-image-preview");
+        itemImagePreview.addEventListener("click", (e) => {
+            this.getElementById("item-image-input").click();
+        });
+
+        this.getElementById("item-image-input").addEventListener("input", async (e) => {
+            try{   
+                const base64 = await Utils.compressImage(e.target.files[0]);
+                if(base64){
+                    itemImagePreview.src = base64;
+                    this.getElementById("item-image-url").value = base64;
+                }
+            }catch(err){
+                console.log(err);
+            }
+        });
+
+        this.getElementById("item-image-url").addEventListener("input", (e) => {
+            itemImagePreview.src = e.target.value;
+        });
+    }
+
+    updateItemPopup() {
+        if(this.imageOption === 0){
+            this.getElementById("item-image-url").setAttribute("hidden", true);
+        }else{
+            this.getElementById("item-image-url").removeAttribute("hidden");
         }
     }
 
@@ -47,5 +92,9 @@ class Popup {
             this.backdrop.style.animation = "backdrop-anim forwards .5s";
             this.popupElement.style.animation = "popup-anim forwards .5s";
         }, 500);
+    }
+
+    getElementById(id) {
+        return this.popupElement.querySelector(`#${id}`);
     }
 }

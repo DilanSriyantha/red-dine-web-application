@@ -1,18 +1,18 @@
-<?php 
-    session_start();
-    $user = null;
-    if(isset($_SESSION["user"]))
-    {
-        $user = $_SESSION["user"];
-    }else{
-        unset($user);
-    }
+<?php
+session_start();
+$user = null;
+if (isset($_SESSION["user"])) {
+    $user = $_SESSION["user"];
+} else {
+    unset($user);
+}
 
-    function getUserAttr($key){
-        if(isset($user)){
-            return $user[$key];
-        }
+function getUserAttr($key)
+{
+    if (isset($user)) {
+        return $user[$key];
     }
+}
 ?>
 
 <!DOCTYPE html>
@@ -31,6 +31,34 @@
     <div class="w-100 h-100 background">
         <div class="w-100 h-100">
             <div class="w-100 h-100 display-flex flex-d-column">
+                <div class="menu">
+                    <div class="menu-content-wrapper">
+                        <a class="logo-container" href="../index.php">
+                            <img src="../images/red_logo.png">
+                        </a>
+                        <div class="menu-wrapper">
+                            <div class="menu-container">
+                                <div class="options-container" style="visibility: hidden;">
+                                    <a class="option" href=<?php
+                                    if ($user) {
+                                        echo "./pages/user.php";
+                                    } else {
+                                        echo "./pages/login.php";
+                                    }
+                                    ?>>
+                                        <img src=<?php
+                                        if ($user) {
+                                            echo $user["image"];
+                                        } else {
+                                            echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg";
+                                        }
+                                        ?>>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="w-100 flex-d-column container">
                     <div class="content-wrapper">
                         <div class="acc-info-container">
@@ -39,13 +67,12 @@
                                 <input type="file" accept="image/*" id="prof-pic-input">
                             </form>
                             <div class="prof-pic-container">
-                                <img src=
-                                <?php 
-                                    if(isset($user)){
-                                        echo $user["image"];
-                                    }else{
-                                        echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg";
-                                    }
+                                <img src=<?php
+                                if (isset($user)) {
+                                    echo $user["image"];
+                                } else {
+                                    echo "https://surgassociates.com/wp-content/uploads/610-6104451_image-placeholder-png-user-profile-placeholder-image-png.jpg";
+                                }
                                 ?> style="height: 120px" id="prof-pic-preview">
                                 <a class="edit-prof-pic" id="edit-prof-pic">
                                     <img src="../images/edit-2.svg">
@@ -117,4 +144,5 @@
         }
     });
 </script>
+
 </html>

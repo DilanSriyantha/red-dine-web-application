@@ -110,13 +110,13 @@ $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId='
                                                 </div>
 
                                                 <form action='productActionHandler.php?categoryId=$categoryId&categoryName=$categoryName&productId=$id' method='post' class='product-item-options-container'>
-                                                    <button type='submit' name='btnEdit' style='background-color: #4285f4; border-bottom-left-radius: 20px;'>
+                                                    <button type='button' data-product-id='$id' class='edit-item-button' name='btnEdit' style='background-color: #4285f4; border-bottom-left-radius: 20px;' data-target-popup='add-item-popup'>
                                                         <div>
                                                             <img src='../images/edit-2.svg' style='width: 20px; height: 20px;'>
                                                             Edit
                                                         </div>
                                                     </button>
-                                                    <button type='submit' name='btnDelete' style='background-color: #A84843; border-bottom-right-radius: 20px;'>
+                                                    <button type='submit' data-product-id='$id' name='btnDelete' style='background-color: #A84843; border-bottom-right-radius: 20px;'>
                                                         <div>
                                                             <img src='../images/trash.svg'>
                                                             Delete
@@ -187,6 +187,45 @@ $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId='
             </div>
         </form>
     </div>
+    <div class="popup-container-add-popular popup-container" id="edit-product-popup">
+        <form class="add-popular-form form" id="login-form" action=<?php echo "editProductHandler.php?categoryId=$categoryId&categoryName=$categoryName" ?> method="post" enctype="multipart/form-data">
+            <div class="form-header">
+                Edit Product
+                <div class="close-btn-container">
+                    <button class="close-btn" type="button">x</button>
+                </div>
+            </div>
+            <div style="display: flex; margin: 10px;">
+                <button type="button" class="image-option-button image-option-button-selected" id="image-option-file"
+                    style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;">File</button>
+                <button type="button" class="image-option-button" id="image-option-url"
+                    style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;">URL</button>
+            </div>
+            <div style="display: flex; justify-content: center;">
+                <img src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
+                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; cursor: pointer;"
+                    id="item-image-preview">
+            </div>
+            <input type="file" id="item-image-input" placeholder="item Image" accept="image/*" style="display: none;" name="imageFile">
+            <input type="url" id="item-image-url" placeholder="URL" name="item-image-url" required hidden>
+            <input type="text" id="item-caption" placeholder="Item Caption" name="item-name" required>
+            <input type="textarea" id="item-description" placeholder="Item Description" name="item-description">
+            <input type="number" id="price-input" placeholder="Price" name="price" required>
+            <div style="color: #ececec; display: flex; flex-direction: row; gap: 10px; align-items: center; margin-left: 12px;">
+                <label for="veg">Veg?</label>
+                <input type="checkbox" id="veg" name="veg">
+            </div>
+            <input type="text" value="<?php echo $_GET["categoryId"] ?>" name="categoryId" hidden>
+            <!-- <div>
+                <hr>
+            </div> -->
+            <div class="form-footer">
+                <div class="btn-container">
+                    <input class="btn-submit m-0" type="submit" id="popup-form-submit" value="Confirm"></input>
+                </div>
+            </div>
+        </form>
+    </div>
     <script src="../scripts/WebMasterFunctions/web-master-functions.js"></script>
     <script src="../scripts/productsFunctions/product.js"></script>
     <!-- <script src="../scripts/productsFunctions/products-functions.js"></script> -->
@@ -203,6 +242,7 @@ $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId='
         const txtSearch = document.getElementById("search-input");
         const btnSearch = document.getElementById("search-button");
         const btnDeleteCategory = document.getElementById("delete-category-button");
+        const editButtons = document.getElementsByClassName("edit-item-button");
 
         const popupIds = [
             "add-product-popup"
@@ -213,51 +253,34 @@ $query = "SELECT * FROM (SELECT * FROM `product` AS Rel_Prods WHERE categoryId='
         for (var i = 0; i < addBtns.length; i++) {
             var popup = new Popup(addBtns.item(i), document.getElementById(popupIds[i]), backdrop);
             popups.push(popup);
+            popup.initTriggers();
         }
 
-        popups.forEach((p) => {
-            p.initTriggers();
-        });
+        var optionBtns = document.querySelectorAll("a button");
+        optionBtns.forEach(btn => {
+            if(btn.getAttribute("name").match("btnDelete")) return;
+            btn.addEventListener("click", async (e) => {
+                e.stopPropagation();
+                e.preventDefault();
 
-        for (var i = 0; i < imageOptionButtons.length; i++) {
-            imageOptionButtons.item(i).addEventListener("click", (e) => {
-                const selectedImageOptions = document.getElementsByClassName("image-option-button-selected");
-                for (var i = 0; i < selectedImageOptions.length; i++) {
-                    selectedImageOptions.item(i).classList.remove("image-option-button-selected");
+                try{
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const res = await fetch("./productActionHandler.php?categoryId=" + urlParams.get("categoryId") + "&categoryName=" + urlParams.get("categoryName") + "&productId=" + btn.getAttribute("data-product-id"), {
+                        method: "POST"
+                    });
+                    if(res){
+                        const raw = await res.text();
+
+                        var editPopup = new Popup(btn, document.getElementById("edit-product-popup"), backdrop);
+                        editPopup.popupElement.innerHTML = "";
+                        editPopup.popupElement.innerHTML = raw;
+                        editPopup.open();
+                        editPopup.initTriggers();
+                    }
+                }catch(err){
+                    console.log(err);
                 }
-                e.target.classList.add("image-option-button-selected");
-                imageOption === 0 ? imageOption = 1 : imageOption = 0;
-
-                updateItemPopup();
             });
-        }
-
-        const updateItemPopup = () => {
-            if (imageOption === 0) {
-                itemImageUrl.setAttribute("hidden", true);
-            } else {
-                itemImageUrl.removeAttribute("hidden");
-            }
-        };
-
-        itemImagePreview.addEventListener("click", (e) => {
-            itemImageInput.click();
-        });
-
-        itemImageInput.addEventListener("input", async (e) => {
-            try {
-                const base64 = await Utils.compressImage(e.target.files[0]);
-                if (base64) {
-                    itemImagePreview.src = base64;
-                    itemImageUrl.value = base64;
-                }
-            } catch (err) {
-                console.log(err);
-            }
-        });
-
-        itemImageUrl.addEventListener("input", (e) => {
-            itemImagePreview.src = e.target.value;
         });
 
         searchForm.addEventListener("submit", async (e) => {
