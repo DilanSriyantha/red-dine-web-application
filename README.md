@@ -66,7 +66,7 @@ git clone https://github.com/yourusername/reddine.git
 composer require kreait/firebase-php
 ```
 
-4. **Create a firebase project:** Create a firebase project on your firebase console and setup a storage bucket. (set read access to public for convenience) And then change the following lines in `firebase-config.php` file accordingly.
+4. **Create a firebase project:** Create a firebase project on your firebase console and setup a storage bucket. (set read access to public for convenience) Then generate a new private key on firebase console and download the file it generates for you and move it to the project directory. finally, change the following lines in `firebase-config.php` file accordingly.
 ```php
 require __DIR__.'/vendor/autoload.php';
 
