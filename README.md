@@ -68,7 +68,7 @@ composer require kreait/firebase-php
 
 4. **Create a firebase project:** Create a firebase project on your firebase console and setup a storage bucket. (set read access to public for convenience) And then change the following lines in `firebase-config.php` file accordingly.
 ```php
-
+composer require kreait/firebase-php
 ```
 
 5. **Setup the Database:** Import the provided SQL file to set up the database.
