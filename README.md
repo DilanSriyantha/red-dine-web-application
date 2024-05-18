@@ -43,11 +43,11 @@ RedDine enables users to browse a variety of food categories and products, add i
 - Category Management: Add, edit, or delete product categories to keep the menu up-to-date.
 - Product Management: Manage the inventory by adding, updating, or removing products within categories.
 - Order Management: View and respond to customer orders in real-time.
-Technologies Used
-- PHP: Server-side scripting language for backend logic.
-- HTML: Markup language for structuring the web pages.
-- CSS: Styling language for designing the user interface.
-- JavaScript: Programming language for interactive and dynamic elements.
+- **Technologies Used**
+  - PHP: Server-side scripting language for backend logic.
+  - HTML: Markup language for structuring the web pages.
+  - CSS: Styling language for designing the user interface.
+  - JavaScript: Programming language for interactive and dynamic elements.
 
 
 ## Installation
@@ -56,7 +56,7 @@ To get started with RedDine, follow these steps:
 
 1. **Clone the Repository:** Clone the RedDine repository to your local machine (use www directory for WAMP, htdocs directory for XAMPP for convenience).
 ```bash
-git clone https://github.com/yourusername/reddine.git
+git clone https://github.com/DilanSriyantha/red-dine-web-application.git
 ```
 
 2. **Install Composer:** Install Composer (a dependency management tool for php) on your computer.
